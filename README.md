@@ -31,7 +31,7 @@ Make two subdirectories in your folder:
 
 ##Flow
 If n number of Illumina PE files are placed in the data sub-directory...
-* A sub directory named after the base is created. Each sub-directory will have the following structure:
+* A sub-directory named after the base is created (n sub-directories will be created). Each sub-directory will have the following structure:
 
 * base
 	* fastqc_reports
