@@ -26,5 +26,18 @@ Make two subdirectories in your folder:
 * Run pipeline: sh run_assembly.sh
 
 ##Additional Notes
-* Example File Names (Illumina PE): B055_S5_R1.fastq.gz, B055_S5_R2.fastq.gz. This script operates with the assumption that the files are named in this format (up to 5 characters for strain name (e.g., B055, B0267), as these first 5 characters will make up the base name).
+* Example File Names (Illumina PE): B055_S5_R1.fastq.gz, B055_S5_R2.fastq.gz. This script operates with the assumption that the files are named in this format. The base (e.g., B055, B0267), will be used to create directories, and is the prefix for all subsequently named output files. As it is set now, the max number of base characters is 5, but this can be changed in the script.
 * The name of the reference file(s) will need to be changed in the run_assembly.sh script to reflect the employed reference genbank files.
+
+##Flow
+If n number of Illumina PE files are placed in the data sub-directory...
+* A sub directory named after the base is created. Each sub-directory will have the following structure:
+
+* base
+	* fastqc_reports
+	* trimmed_data
+	* spades
+	* fastqc_corrected_reports
+	* bwa_indices
+	* pilon
+	* mauve_alignment
