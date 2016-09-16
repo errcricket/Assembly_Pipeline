@@ -98,17 +98,9 @@ function run_pilon
 
 function mauve_alignment
 {
-#  1 Accession_Number    Common_Name Entity_Type
-#  2 CP001164    EC4115  Chromosome
-#  3 CP001163    EC4115  Plasmid
-#  4 CP008957    EDL933  Chromosome
-#  5 CP008958    EDL933  Plasmid
-#  6 U00096  K12 (MG1655)    Chromosome
-#  7 NC_002695   Sakai   Chromosome
-#  8 NC_002128   Sakai   Plasmid
-#  9 NC_002127   Sakai   Plasmid
-
 	mauve_directory=$base_directory"mauve/"
+	mauve_input_file=$pilon_directory$base_directory".fasta"
+
 	mkdir -p $mauve_directory
 
 	if [ $base_directory == B055 ]
@@ -120,28 +112,10 @@ function mauve_alignment
 		export ref=_EDL933
 	fi
 
-
 	mauve_prefix=$base_directory$ref
-		
-#	cd $mauve_directory
+	mauve_output=$mauve_directory$mauve_prefix"_reordered"
 
-#	ln -sf ../../Reference_Files/Ecoli_EC4115.gbk .
-#	ln -sf ../../Reference_Files/Ecoli_EDL933.gbk .
-#	ln -sf ../../Reference_Files/Ecoli_Sakai.gbk .
-#	ln -sf ../../Reference_Files/Ecoli_K12.gbk .
-#	ln -sf ../pilon/B055.fasta
-
-#	#for ref in EC4115 #EDL933 Sakai
-#	for ref in K12 
-#	{
-#		mauve_prefix="B055_"$ref
-#		mkdir -p $mauve_prefix
-#		ref_file="Ecoli_"$ref".gbk"
-#		#echo $ref_file
-#
-#		#progressiveMauve --output=$mauve_prefix"/"$mauve_prefix".fasta" --disable-backbone $ref_file B055.fasta 
-#		java -Xmx900m -cp /usr/local/Mauve/Mauve.jar org.gel.mauve.contigs.ContigOrderer -output $mauve_prefix"/"$mauve_prefix"_reordered" -ref $ref_file -draft B055.fasta
-#	}
+	java -Xmx16G -cp /usr/local/Mauve/Mauve.jar org.gel.mauve.contigs.ContigOrderer -output $mauve_output -ref $ref_file -draft $mauve_input_file 
 }
 #----------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -149,33 +123,34 @@ function mauve_alignment
 sequence_file_list=(data/*R1.fastq.gz)
 for forward_file in ${sequence_file_list[*]}
 {
-	export forward_file
-	#set base directory
-	base_directory="${forward_file/data\//}"
-	base_directory=${base_directory:0:5}
-	export base_directory="${base_directory/_/}"
+	#set initial forward fastq file
+		export forward_file
 
-	mkdir -p $base_directory
-	#echo $base_directory
+	#set base directory
+		base_directory="${forward_file/data\//}"
+		base_directory=${base_directory:0:5}
+		export base_directory="${base_directory/_/}"
+
+		mkdir -p $base_directory
 
 	#create quality report using fastqc 
-	run_fastqc
+		run_fastqc
 
 	#trim paired-end reads using trimmomatic
-	run_trimmatic
+		run_trimmatic
 
 	#de-novo assembly using SPAdes
-	run_spades
+		run_spades
 
 	#create quality report on corrected & trimmed fastq files using fastqc 
-#	run_fastqc_corrected 
+	#	run_fastqc_corrected 
 
 	#create sam/bam alignment (sorted) files
-#	get_sorted_bam_files
+	#	get_sorted_bam_files
 
 	#improve draft assembly with Pilon
-#	run_pilon
+	#	run_pilon
 
 	#align second draft assembly to reference using Mauve
-#	mauve_alignment
+	#	mauve_alignment
 }
