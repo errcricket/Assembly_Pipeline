@@ -68,10 +68,10 @@ function get_sorted_bam_files
 {
 	export bwa_directory=$base_directory"/bwa_indices/"
 	export draft_assembly_file=$bwa_directory$base_directory".fa"
-	sam_file=$base_directory".sam"
-	sorted_prefix=$base_directory"_sorted"
+	export sam_file=$base_directory".sam"
+	export sorted_prefix=$base_directory"_sorted"
 	export sorted_bam=$base_directory"_sorted.bam"
-	sorted_bai=$base_directory"_sorted.bai"
+	export sorted_bai=$base_directory"_sorted.bai"
 	home_dir=/home/cricket/Projects/Assembly_Pipeline/
 
 
@@ -92,17 +92,17 @@ function get_sorted_bam_files
 
 function run_pilon
 {
-	pilon_directory=$base_directory"/pilon/"
+	export pilon_directory=$base_directory"/pilon/"
 	mkdir -p $pilon_directory
 	sorted_bam=$bwa_directory$sorted_bam
 
-	java -Xmx16G -jar /usr/local/pilon.jar --threads 28 --genome $draft_assembly_file --frags $sorted_bam --changes --tracks --output $base_directory --outdir $pilon_directory 
+	#java -Xmx16G -jar /usr/local/pilon.jar --threads 28 --genome $draft_assembly_file --frags $sorted_bam --changes --tracks --output $base_directory --outdir $pilon_directory 
 }
 #----------------------------------------------------------------------------------------------------------------------------------------------------
 
 function mauve_alignment
 {
-	mauve_directory=$base_directory"/mauve/"
+	export mauve_directory=$base_directory"/mauve/"
 	mauve_input_file=$pilon_directory$base_directory".fasta"
 
 	mkdir -p $mauve_directory
@@ -117,11 +117,45 @@ function mauve_alignment
 	fi
 
 	mauve_prefix=$base_directory$ref
-	#mauve_output=$mauve_directory$mauve_prefix"_reordered"
 
-	java -Xmx16G -cp /usr/local/Mauve/Mauve.jar org.gel.mauve.contigs.ContigOrderer -output $mauve_directory -ref $ref_file -draft $mauve_input_file 
+	#java -Xmx16G -cp /usr/local/Mauve/Mauve.jar org.gel.mauve.contigs.ContigOrderer -output $mauve_directory -ref $ref_file -draft $mauve_input_file 
+}
+#----------------------------------------------------------------------------------------------------------------------------------------------------
 
-	#java -Xmx16G -cp /usr/local/Mauve/Mauve.jar org.gel.mauve.contigs.ContigOrderer -output $mauve_output -ref $ref_file -draft $mauve_input_file 
+function copy_final_assembly
+{
+	#This will copy over fasta files to end up with the last alignment fasta file
+	export IGV_directory=$base_directory"/IGV/"
+	mkdir -p $IGV_directory
+
+	final_assembly=$IGV_directory$base_directory".fa"
+
+#	for dir in ${mauve_directory[*]}
+#	do
+#		assemblies=($mauve_directory"*/*.fasta")
+#		for assembly in ${assemblies[*]}
+#		do
+#			cp $assembly $final_assembly
+#		done
+#	done
+}
+
+#----------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+function index_final_assembly
+{
+	export final_assembly_file=$IGV_directory$base_directory".fa"
+	echo $final_assembly_file
+
+	cd $IGV_directory
+
+	#bwa index -p $base_directory -a is $base_directory".fa"
+	bwa mem -t 20 $base_directory  $home_dir$corrected_forward_file $home_dir$corrected_reverse_file > $sam_file
+	samtools view -bS $sam_file | samtools sort - $sorted_prefix
+	samtools index $sorted_bam $sorted_bai 
+	
+	cd -
 }
 #----------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -158,5 +192,11 @@ for forward_file in ${sequence_file_list[*]}
 		run_pilon
 
 	#align second draft assembly to reference using Mauve
-	#	mauve_alignment
+		mauve_alignment
+
+	#copy final assembly files to IGV directory
+		copy_final_assembly
+
+	#create index files of final assembly
+		index_final_assembly
 }
