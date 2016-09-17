@@ -70,36 +70,29 @@ function get_sorted_bam_files
 	draft_assembly_file=$bwa_directory$base_directory".fa"
 	sam_file=$base_directory".sam"
 	sorted_prefix=$base_directory"_sorted"
-	sorted_bam=$bwa_directory$base_directory"_sorted.bam"
-	sorted_bai=$bwa_directory$base_directory"_sorted.bai"
+	sorted_bam=$base_directory"_sorted.bam"
+	sorted_bai=$base_directory"_sorted.bai"
+	home_dir=/home/cricket/Projects/Assembly_Pipeline/
+
 
     mkdir -p $bwa_directory 
 	ln -sf $home_dir$spades_directory"scaffolds.fasta" $draft_assembly_file
 
 	cd $bwa_directory
 
-	#echo $draft_assembly_file, $base_directory".fa"
-	#echo $home_dir$corrected_forward_file $corrected_reverse_file $home_dir $sam_file
-	#echo 
 	#bwa index -p $base_directory -a is $base_directory".fa"
-	bwa mem -t 20 $base_directory  $home_dir$corrected_forward_file $home_dir$corrected_reverse_file > $sam_file
-	#bwa mem -t 20 $bwa_directory  $corrected_forward_file $corrected_reverse_file > $sam_file
-	#samtools view -bS $sam_file | samtools sort - $sorted_prefix
-	#samtools index $sorted_bam $sorted_bai 
+	#bwa mem -t 20 $base_directory  $home_dir$corrected_forward_file $home_dir$corrected_reverse_file > $sam_file
+	samtools view -bS $sam_file | samtools sort - $sorted_prefix
+	samtools index $sorted_bam $sorted_bai 
 	
 	cd -
-
-#B349/bwa_indices/
-#B349/bwa_indices/B349.fa
-#/home/cricket/Projects/Assembly_Pipeline
 }
 #----------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 function run_pilon
 {
-	echo run_pilon
-	pilon_directory=$base_directory"pilon/"
+	pilon_directory=$base_directory"/pilon/"
 
 	mkdir -p $pilon_directory
 	java -Xmx16G -jar /usr/local/pilon.jar --threads 28 --genome $draft_assembly_file --frags $sorted_bam --changes --tracks --output $base_directory --outdir $pilon_directory 
@@ -108,7 +101,7 @@ function run_pilon
 
 function mauve_alignment
 {
-	mauve_directory=$base_directory"mauve/"
+	mauve_directory=$base_directory"/mauve/"
 	mauve_input_file=$pilon_directory$base_directory".fasta"
 
 	mkdir -p $mauve_directory
