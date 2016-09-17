@@ -37,9 +37,9 @@ function run_spades
 	spades_forward_file="${trimmed_name/.fq.gz/_1P.fq.gz}"
 	spades_reverse_file="${trimmed_name/.fq.gz/_2P.fq.gz}"
 	
-	echo $spades_forward_file $spades_reverse_file
+	#echo $spades_forward_file $spades_reverse_file
 
-	time spades.py --careful -1 $spades_forward_file -2 $spades_reverse_file -t 28 -o $spades_directory 
+	#time spades.py --careful -1 $spades_forward_file -2 $spades_reverse_file -t 26 -o $spades_directory 
 }
 #----------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -51,11 +51,13 @@ function run_fastqc_corrected #run fastqc to check for quality
 
 	ending=".00.0_0.cor.fastq.gz"
 	spades_corrected_base=$spades_directory"corrected/"
-
-	export corrected_forward_file=$spades_directory$base_directory"_1P.fq"$ending
+	
+	export corrected_forward_file=$spades_corrected_base$base_directory"_1P.fq"$ending
 	export corrected_reverse_file="${corrected_forward_file/1P/2P}"
 
-	echo $corrected_forward_file $corrected_reverse_file
+	#echo $corrected_forward_file 
+	#echo $corrected_reverse_file
+
 	#fastqc $corrected_forward_file -o $fastqc_corrected_directory 
 	#fastqc $corrected_reverse_file -o $fastqc_corrected_directory
 }
@@ -64,24 +66,32 @@ function run_fastqc_corrected #run fastqc to check for quality
 
 function get_sorted_bam_files
 {
-	bwa_directory=$base_directory"bwa_indices/"
+	bwa_directory=$base_directory"/bwa_indices/"
 	draft_assembly_file=$bwa_directory$base_directory".fa"
 	sam_file=$base_directory".sam"
 	sorted_prefix=$base_directory"_sorted"
-	sorted_bam=$base_directory"_sorted.bam"
-	sorted_bai=$base_directory"_sorted.bai"
+	sorted_bam=$bwa_directory$base_directory"_sorted.bam"
+	sorted_bai=$bwa_directory$base_directory"_sorted.bai"
 
-    mkdir -p $bwa_indices 
-	ln -s $spades_directory"scaffolds.fasta" $draft_assembly_file
+    mkdir -p $bwa_directory 
+	ln -sf $home_dir$spades_directory"scaffolds.fasta" $draft_assembly_file
 
 	cd $bwa_directory
 
-	bwa index -p $base_directory -a is $draft_assembly_file
-	bwa mem -t 20 $base_directory  $corrected_forward_file $corrected_reverse_file > $sam_file
-	samtools view -bS $sam_file | samtools sort - $sorted_prefix
-	samtools index $sorted_bam $sorted_bai 
+	#echo $draft_assembly_file, $base_directory".fa"
+	#echo $home_dir$corrected_forward_file $corrected_reverse_file $home_dir $sam_file
+	#echo 
+	#bwa index -p $base_directory -a is $base_directory".fa"
+	bwa mem -t 20 $base_directory  $home_dir$corrected_forward_file $home_dir$corrected_reverse_file > $sam_file
+	#bwa mem -t 20 $bwa_directory  $corrected_forward_file $corrected_reverse_file > $sam_file
+	#samtools view -bS $sam_file | samtools sort - $sorted_prefix
+	#samtools index $sorted_bam $sorted_bai 
 	
 	cd -
+
+#B349/bwa_indices/
+#B349/bwa_indices/B349.fa
+#/home/cricket/Projects/Assembly_Pipeline
 }
 #----------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -143,10 +153,10 @@ for forward_file in ${sequence_file_list[*]}
 		run_spades
 
 	#create quality report on corrected & trimmed fastq files using fastqc 
-	#	run_fastqc_corrected 
+		run_fastqc_corrected 
 
 	#create sam/bam alignment (sorted) files
-	#	get_sorted_bam_files
+		get_sorted_bam_files
 
 	#improve draft assembly with Pilon
 	#	run_pilon
