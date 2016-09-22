@@ -70,13 +70,12 @@ function get_sorted_bam_files
 	export draft_assembly_file=$bwa_directory$base_directory".fa"
 	export sam_file=$base_directory".sam"
 	export sorted_prefix=$base_directory"_sorted"
-	export sorted_bam=$base_directory"_sorted.bam"
-	export sorted_bai=$base_directory"_sorted.bai"
-	home_dir=/home/cricket/Projects/Assembly_Pipeline/
-
+	export sorted_bam=$sorted_prefix".bam"
+	export sorted_bai=$sorted_prefix".bai"
+	export home_dir=/home/cricket/Projects/Assembly_Pipeline/
 
     mkdir -p $bwa_directory 
-	ln -sf $home_dir$spades_directory"scaffolds.fasta" $draft_assembly_file
+#	ln -sf $home_dir$spades_directory"scaffolds.fasta" $draft_assembly_file
 
 #	cd $bwa_directory
 #
@@ -130,14 +129,14 @@ function copy_final_assembly
 
 	final_assembly=$IGV_directory$base_directory".fa"
 
-#	for dir in ${mauve_directory[*]}
-#	do
-#		assemblies=($mauve_directory"*/*.fasta")
-#		for assembly in ${assemblies[*]}
-#		do
-#			cp $assembly $final_assembly
-#		done
-#	done
+	for dir in ${mauve_directory[*]}
+	do
+		assemblies=($mauve_directory"*/*.fasta")
+		for assembly in ${assemblies[*]}
+		do
+			cp $assembly $final_assembly
+		done
+	done
 }
 
 #----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -146,20 +145,133 @@ function copy_final_assembly
 function index_final_assembly
 {
 	export final_assembly_file=$IGV_directory$base_directory".fa"
-	echo $final_assembly_file
+	#echo $final_assembly_file
+	export sorted_bam=$base_directory"_sorted.bam"
 
 	cd $IGV_directory
 
+	echo $sorted_bam $sorted_bai
+	ln -sf $home_dir$reference_indices"" $draft_assembly_file
+
 	#bwa index -p $base_directory -a is $base_directory".fa"
-	bwa mem -t 20 $base_directory  $home_dir$corrected_forward_file $home_dir$corrected_reverse_file > $sam_file
-	samtools view -bS $sam_file | samtools sort - $sorted_prefix
-	samtools index $sorted_bam $sorted_bai 
-	
+	#bwa mem -t 20 $base_directory  $home_dir$corrected_forward_file $home_dir$corrected_reverse_file > $sam_file
+
+	#bwa mem -t 20 $base_directory  $base_directory".fa" > $sam_file
+	#samtools view -bS $sam_file | samtools sort - $sorted_prefix
+	#samtools index $sorted_bam $sorted_bai 
+
 	cd -
 }
 #----------------------------------------------------------------------------------------------------------------------------------------------------
 
+function index_to_reference
+{
+	export reference_indices=reference_mapping_files
+	mkdir -p $reference_indices
+	
+#	cd $reference_indices
+
+	export sorted_bam=$base_directory"_sorted.bam"
+	export sorted_bai=$base_directory"_sorted.bai"
+#	echo $sorted_bam $sorted_bai
+
+#	bwa mem -t 20 $base_directory  $home_dir$corrected_forward_file $home_dir$corrected_reverse_file > $sam_file
+#	samtools view -bS $sam_file | samtools sort - $sorted_prefix
+#	samtools index $sorted_bam $sorted_bai 
+
+#	cd -
+}
+#----------------------------------------------------------------------------------------------------------------------------------------------------
+
+function separate_plasmid_chromosome
+{
+	export prokka_directory=$base_directory"/prokka/"
+	export chromosome_directory=$prokka_directory"chromosome/"
+	export plasmid_directory=$prokka_directory"plasmid/"
+
+	mkdir -p $prokka_directory
+	mkdir -p $chromosome_directory
+	mkdir -p $plasmid_directory
+	
+	final_assembly=$prokka_directory$base_directory"_formatted.fa"
+
+	for dir in ${mauve_directory[*]}
+	do
+		assemblies=($mauve_directory"*/*.fasta")
+		for assembly in ${assemblies[*]}
+		do
+			fasta_formatter -i $assembly -o $final_assembly
+		done
+	done
+
+	contig_file=plasmid_contig_list.txt
+
+	#python separate_plasmids_chromosomes.py $base_directory $final_assembly $contig_file $chromosome_directory $plasmid_directory
+}
+#----------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+function remove_n_repeats
+{
+	export plasmid_file=$plasmid_directory$base_directory"_P.fa"
+	chromosome_file=$chromosome_directory$base_directory"_C.fa"
+	#python replace_n_repeats.py $base_directory $chromosome_file $chromosome_directory $plasmid_file $plasmid_directory
+}
+#----------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+function align_plasmids
+{
+	export plasmid_alignment_directory=$plasmid_directory"/mauve/"
+
+	mkdir -p $plasmid_alignment_directory
+
+	if [ $base_directory != B055 ] #|| [ $base_directory == B204 ]
+	then
+		export ref_file=reference_files/CP008958.gbk
+	fi
+
+	#java -Xmx16G -cp /usr/local/Mauve/Mauve.jar org.gel.mauve.contigs.ContigOrderer -output $plasmid_alignment_directory -ref $ref_file -draft $plasmid_file 
+}
+#----------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+function separate_plasmid_contigs
+{
+
+	export plasmid_final_assembly_directory=$plasmid_directory"final_assembly/"
+	mkdir -p $plasmid_final_assembly_directory
+
+	final_assembly=$plasmid_final_assembly_directory$base_directory"_P.fa"
+
+	if [ $base_directory != B055 ] #|| [ $base_directory == B204 ]
+	then
+		for dir in ${plasmid_alignment_directory[*]}
+		do
+			assemblies=($plasmid_alignment_directory"alignment*/"$base_directory"_P.fa.fas")
+			for assembly in ${assemblies[*]}
+			do
+				echo $assembly
+				#cp $assembly $final_assembly
+			done
+		done
+
+	fi
+}
+#----------------------------------------------------------------------------------------------------------------------------------------------------
+
+
 #-----------------Function Calls--------------------
+
+export reference_indices=reference_mapping_files/
+mkdir -p $reference_indices
+#cd $reference_indices
+#pwd
+#bwa index -p CP008957 -a is ../reference_files/CP008957.fasta
+#bwa index -p U00096 -a is ../reference_files/U00096.fasta
+#bwa index -p CP008958 -a is ../reference_files/CP008958.fasta
+#cd -
+
 sequence_file_list=(data/*R1.fastq.gz)
 for forward_file in ${sequence_file_list[*]}
 {
@@ -172,6 +284,17 @@ for forward_file in ${sequence_file_list[*]}
 		export base_directory="${base_directory/_/}"
 
 		mkdir -p $base_directory
+
+		#mkdir -p B204/mauve/
+		#mkdir -p B204/mauve/EC4115/
+		#mkdir -p B204/mauve/Sakai/
+		#mkdir -p B204/mauve/EDL933/
+		#mkdir -p B204/mauve/K12/
+
+		#java -Xmx16G -cp /usr/local/Mauve/Mauve.jar org.gel.mauve.contigs.ContigOrderer -output B204/mauve/EC4115 -ref reference_files/CP001164.gbk  -draft B204/pilon/B204.fasta 
+		#java -Xmx16G -cp /usr/local/Mauve/Mauve.jar org.gel.mauve.contigs.ContigOrderer -output B204/mauve/Sakai -ref reference_files/NC_002695.gbk  -draft B204/pilon/B204.fasta 
+		#java -Xmx16G -cp /usr/local/Mauve/Mauve.jar org.gel.mauve.contigs.ContigOrderer -output B204/mauve/EDL933 -ref reference_files/CP008957.gbk  -draft B204/pilon/B204.fasta 
+		#java -Xmx16G -cp /usr/local/Mauve/Mauve.jar org.gel.mauve.contigs.ContigOrderer -output B204/mauve/K12 -ref reference_files/U00096.gbk  -draft B204/pilon/B204.fasta 
 
 	#create quality report using fastqc 
 		run_fastqc
@@ -197,6 +320,25 @@ for forward_file in ${sequence_file_list[*]}
 	#copy final assembly files to IGV directory
 		copy_final_assembly
 
+	#This step is not finalized 
 	#create index files of final assembly
 		index_final_assembly
+
+	#This step is not finalized 
+	#create index files by mapping final fasta files to reference 
+		index_to_reference
+
+	#Separate plasmid from chromosome
+		separate_plasmid_chromosome
+
+	#Remove n's from plasmid and chromosome files
+		remove_n_repeats
+
+	#align plasmids to ELD933 plasmid
+		align_plasmids
+
+	#Separate non-aligned contigs from plasmid files
+	##NOTE: Prior to this step, final alignments must be manually inspected 
+	### to find last aligned Node, and place that info in output file.
+		separate_plasmid_contigs
 }
