@@ -37,30 +37,3 @@ def remove_Ns(fasta_file, temp_file):
 
 remove_Ns(plasmid_file, temp_plasmid)
 remove_Ns(chromosome_file, temp_chromosome)
-
-'''
-with open(plasmid_file, 'r') as file_p, open(temp_plasmid, 'w') as temp_p:
-	for line in file_p.readlines():
-		if line.startswith('>'):
-			temp_p.write(line)
-		else:
-			line = line.replace('n', '')
-			temp_p.write(line)
-
-copyfile(temp_plasmid, plasmid_file)
-os.remove(temp_plasmid)
-
-B349/prokka/plasmid/temp.fa B349/prokka/chromosome/temp.fa
-Traceback (most recent call last):
-  File "replace_n_repeats.py", line 34, in <module>
-    copyfile(temp_p, plasmid_file)
-  File "/usr/local/anaconda3/lib/python3.5/shutil.py", line 97, in copyfile
-    if _samefile(src, dst):
-  File "/usr/local/anaconda3/lib/python3.5/shutil.py", line 82, in _samefile
-    return os.path.samefile(src, dst)
-  File "/usr/local/anaconda3/lib/python3.5/genericpath.py", line 90, in samefile
-    s1 = os.stat(f1)
-TypeError: argument should be string, bytes or integer, not _io.TextIOWrapper
-
-shell returned 1
-'''
