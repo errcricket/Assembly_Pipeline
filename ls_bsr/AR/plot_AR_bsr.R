@@ -33,7 +33,7 @@ col_breaks = c(0, 0.5, 1)
 my_palette <- colorRampPalette(wes_palette('Zissou', 21, type = 'continuous'))
 # Zissou = c("#3B9AB2", "#78B7C5", "#EBCC2A", "#E1AF00", "#F21A00"),
 
-png(filename=image_file, width=3750,height=2750,res=300, pointsize=6)
+png(filename=image_file, width=3750,height=2750,res=300)
 print(i <- ggplot(m_data, aes(x=Gene, y=Strain)) +
         geom_tile(color='gray', aes(fill = LS_BSR)) +
         theme(axis.text.x=element_text(angle=90, hjust=1, size=5), axis.title.x=element_text(size=14))  +
