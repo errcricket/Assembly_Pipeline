@@ -237,7 +237,7 @@ The phylogenetic tree file was created in Mauve (\textbf{ACHTUNG!!! This may not
 \hline
 \multicolumn{1}{l}{\textbf{\textit{E\_coli} strains}} & \multicolumn{1}{l}{\textbf{Mean\_log10CFU/ml}} & \multicolumn{1}{l}{\textbf{SD (log10CFU/ml)}} & \multicolumn{1}{l}{\textbf{M9GT\_Flocculation}} & \multicolumn{1}{l}{\textbf{Curli\_Production}} & \textbf{Source} \\
 \hline
-B505 & NA 	& NA   & NA & NA & Human isolate                                 \\
+B055 & NA 	& NA   & NA & NA & Human isolate                                 \\
 B201 & 2.05 & 0.43 & P & P+ &  Apple cider, October 2002                     \\
 B202 & 0.29 & 0.03 & N & N &   Salami, October 2002                          \\
 B204 & 0.17 & 0.03 & N & P &   Pork, September 2002                          \\
@@ -265,7 +265,7 @@ B311 & 0.49 & 0.16 & N & N &   Human, outbreak, 2006, leafy vegetable        \\
 B349 & 0.28 & 0.15 & N & N &   Spinach                                       \\
 \hline
 \end{tabular}
-\caption{Table for strain characteristics. *Note: All strains save for B505 (K-12) are O157:H7.}
+\caption{Table for strain characteristics. *Note: All strains save for B055 (K-12) are O157:H7.}
 \label{demographics}
 \end{table}
 
@@ -273,15 +273,15 @@ B349 & 0.28 & 0.15 & N & N &   Spinach                                       \\
 %  \begin{minipage}[b]{0.2\linewidth}
 \begin{figure}[ht!]\normalsize %figure 10
 \centering
-\includegraphics[scale=0.53]{../corpus_assembly/corpus_source.png}
+\includegraphics[scale=0.93]{../corpus_assembly/corpus_source.png}
 \caption{Phylogenetic Tree -- colored by source (see Table~\ref{demographics})}
 \label{source_tree}
 \end{figure}
-%\clearpage
+\clearpage
 
 \begin{figure}[ht!]\normalsize %figure 11
 \centering
-\includegraphics[scale=0.33]{../corpus_assembly/Curli}
+\includegraphics[scale=0.53]{../corpus_assembly/Curli}
 \caption{Phylogenetic Tree -- colored by curli production (see Table~\ref{demographics}). P: Purple, P+: Red, N: Orange, Reference: Blue.}
 \label{curli_tree}
 \end{figure}
@@ -300,7 +300,7 @@ Although I see no pattern linking the trees and the source/curli production/floc
 As an example, the number of SNPs for \textbf{1} strain (when compared to EDL933), is over 86,000 SNPs. Not only would this be a very cumbersome exercise, the biological question should be narrowed to a handful of genes. I will have more to say about this at the end of this report. \\
 
 \subsection*{LS-BSR}
-There are multiple ways in which to compare two or more gene sequences such as sequence identity. This section compares some acid resistance and virulence genes using something called BLAST score ratio (BSR). \textit{The BSR is computed as follows. The BLAST raw score for each reference peptide against itself is stored as the reference score. The BSR is calculated by dividing the query BLAST raw score score by the reference score for each reference peptide}. As there is an interest in the acid resistance systems and possibly the virulence genes, I found as many of the genes as I could in the K-12, EDL933, EC4115, and Sakai genomes. The genes (x-axis) are ordered according to reference genome (there may be multiple occurrences of the same gene, but genes are ordered by the reference genome, not the gene name).
+There are multiple ways in which to compare two or more gene sequences such as sequence identity or BLAST. This section compares some acid resistance and virulence genes using something called BLAST score ratio (BSR). \textit{The BSR is computed as follows. The BLAST raw score for each reference peptide against itself is stored as the reference score. The BSR is calculated by dividing the query BLAST raw score score by the reference score for each reference peptide}. As there is an interest in the acid resistance systems and possibly the virulence genes, I found as many of the genes (from Kat's manuscript) as I could in the K-12, EDL933, EC4115, and Sakai genomes. The genes (x-axis) are ordered according to reference genome \textit{(there may be multiple occurrences of the same gene, but genes are ordered by the reference genome, not the gene name).}
 
 \subsection*{Acid Resistance}
 \begin{figure}[h!]\normalsize %figure 10
@@ -320,12 +320,12 @@ There are multiple ways in which to compare two or more gene sequences such as s
 \end{figure}
 
 \subsection*{Phage}
-The EDL933 genome was run though the PHASTER web server to rapidly identify and annotate the prophage sequences within bacterial genomes and plasmids. Once the phage regions and the genes within those regions were identified, the genes were converted into a multi-sequence fasta file that was then used an input to the ls-bsr pipeline. Once the ls-bsr values were available for the strains, heatmaps were created to show similarity/variability. 
+The EDL933 genome was run though the PHASTER web tool to rapidly identify and annotate prophage regions (Figure~\ref{phage_regions}) within bacterial genomes and plasmids. Once the phage regions and the genes within those regions were identified, the genes were converted into a multi-sequence fasta file that was then used an input to the ls-bsr pipeline. Once the ls-bsr values were available for the strains, heatmaps were created to show similarity/variability. 
 
 \begin{figure}[ht!]\normalsize %figure 12
 \centering
 \includegraphics[scale=0.43]{/home/cricket/Projects/Assembly_Pipeline/reports/circular_genome_chromosome.png}
-\caption{Identified (PHASTER webtool) phage regions for EDL933 chromosome.}
+\caption{Identified (PHASTER web  tool) phage regions for EDL933 chromosome.}
 \label{phage_regions}
 \end{figure}
 
@@ -475,7 +475,7 @@ The EDL933 genome was run though the PHASTER web server to rapidly identify and 
 \clearpage
 
 \subsection*{Core and Accessory Genomes}
-All genes for the 25 strains (not including B505 (K-12)) were collected. In total, there were 7,073 genes amongst the 25 genomes. Each genome was searched for each gene to determine its presence/absence. As there were over seven thousand genes, it is not practically possible to have each gene \textit{easily} detectable. The following image shows the presence and absence for each of the genes and should be used to easily detect patterns.  
+All genes for the 25 strains (excluding B055 (K-12)) were collected. In total, there were 7,073 genes amongst the 25 genomes. Each genome was searched for each gene to determine its presence/absence. As there were over seven thousand genes, it is not possible to \textit{easily} depict all genes in this image at once. The following image shows the presence and absence for each of the genes and should be used to quickly detect patterns.  
 
 \begin{figure}[ht!]\normalsize %figure 15
 \centering
@@ -484,27 +484,33 @@ All genes for the 25 strains (not including B505 (K-12)) were collected. In tota
 \label{presence_absence}
 \end{figure}
 
-For example, it is clear from the image that strain B296 is very different from the other strains. As this is the genome that may have the corrupted file, the figure reflects a known problem. Additionally, B204 is distinct from the other strains --- which is also reflective of previous comments/notes.
+For example, it is clear from the image that strain B296 is very different from the other strains. As this is the genome that may have the corrupted file, the figure reflects a known problem. Additionally, B204 is distinct from the other strains --- which is also reflective of previous comments/notes. There also seems to be similarity (in gene presence/absence, not sequence identity) among strains B0245, B0249, B265, and B273.
 
-
-\section*{Future Work, Analysis, Comments, and Concerns}
-\subsection*{Strains}
-\begin{itemize}
-\item Since strain B505 is a K-12 strain, I believe that it should be removed from future analysis, and that it should be submitted (if it has not already) to NCBI. 
-\item Strain B204 should be sequenced using PacBio technology. The reads can then be employed with the Illumina reads to make a hybrid assembly.
-\item Either determine whether the assembly for strain B296 is corrupted, and if not, another attempt should be made to assembly strain B296.
-\end{itemize}
+\section*{Future Work, Analysis, and Questions (not necessarily in this order)}
 
 \subsection*{Analysis}
 There is so much more analysis that I can do and that needs to be done, but before I start down those paths, there needs to be a plan. Having said that, here is a short list of things I believe need to be done.
-
 \begin{itemize}
-\item Identifying the core and accessory genes
-\item Determining the number of plasmids for each strain
-\item Identifying the SNPs within the relevant genes
+\item Since strain B055 is a K-12 strain, I believe that it should be removed from future analysis, and that it should be submitted (if it has not already) to NCBI. 
+\item Strain B204 should be sequenced using PacBio technology. The reads can then be employed with the Illumina reads to make a hybrid assembly.
+\item Either determine whether the assembly for strain B296 is corrupted, and if not, another attempt should be made to assembly strain B296.
+\item Run remaining contigs through PhagePhinder.
+\item Determine the number of plasmids for each strain.
+\item Identify the SNPs within \textbf{relevant} genes
 \end{itemize}
 
-Consider the following for future analysis: Certain amino acids can be synthesized in multiple ways. For example, look at Figure \ref{AA} for Arginine. Arginine can be made from the following codons (start from the inner ring and work your way out): CGT, CGC, CGA, CGG. It can also be made from AGG, AGA. This is an example of a 6-fold redundant amino acid. What I suggest is to find SNPs that are within genes of interest and fall in the 3rd codon position of 4-fold redundant amino acids. Once they have been located, determine whether there is a relationship between a particular codon and the flocculation/curli production/AR resistance-sensitivity/strain. It is very possible that this type of analysis \textbf{will not} bear fruit, therefore there needs to be some type of wet lab experiment that will land the manuscript in somewhere besides \textit{The Journal of Negative Results}.
+\subsection*{Questions}
+\begin{itemize}
+\item With the exception of B201 and B241, have any of the strains been submitted to Genbank?
+\item I grabbed the list of genes that were presented in Kat's manuscript. They appear to have the nomenclature given in the K-12 genome. If the genes were selected based on K-12 literature, why was this genome targeted rather than EDL933, Sakai, or EC4115? 
+\item Based on the selection of the 26 strains and your work and the work you and Kat did, in which AR system are you interested, and which genes are affiliated with those systems?
+\end{itemize}
+
+There is an almost unlimited number of things that I can compare. However, here is the most important question: What is the biological relevance of these strains and what is the biological question you want to answer? The response should not be \textit{I want to see how these two strains vary}. That is a fun question to ask, but there have been a myriad of comparison papers published, that higher-impact journals are looking for something more than comparisons. The initial articles were either introducing methods or incorporating previously published methods. Since then, it seems that the biological implications --- rather than just reporting differences has become more important. Answering this question will allow me to narrow my efforts.
+
+\subsection*{Future}
+I had thought of trying to correlate codon usage and acid sensitivity. To expand, I would look for SNPs (within AR system genes) and look if those SNPs relate to amino acids that can be made using multiple codons AND if yes, do certain codons (for the same amino acid) correlate to acid sensitivity / resistance (per Kat's pH work). However, Kat's pH work is only for B201 and B241. 
+\clearpage
 
 \begin{figure}[h!]\normalsize %figure 11
 \centering
@@ -512,26 +518,13 @@ Consider the following for future analysis: Certain amino acids can be synthesiz
 \caption{Amino Acid Codon Wheel. The inner circle represents the first nucleotide in codon, the second circle represents the second codon nucleotide, and the third circle signifies the third (wobble) codon nucleotide. The remaining circles (from inside to outside) contains the amino acid names, the 3-letter abbreviation, and the letter that signifies the amino acid.}
 \label{AA}
 \end{figure}
-\clearpage
 
-\subsection*{Questions}
-\begin{itemize}
-\item With the exception of B201 and B241, have any of the strains been submitted to Genbank?
-\item I grabbed the list of genes that were presented in Kat's manuscript. They appear to have the nomenclature given in the K-12 genome. If the genes were selected based on K-12 literature, why was this genome targeted rather than EDL933, Sakai, or EC4115? 
-\item Based on the selection of the 26 strains and your work and the work you and Kat did, in which AR system are you interested?
-
-\item There is an almost unlimited number of things that I can compare. However, what is the biological relevance of these strains and what is the biological question you want to answer? This is the most important question --- spending time reflecting on it will allow me to narrow my efforts while 
-
-The biggest question is where is the hook? There are a myriad of genome comparison papers out there. The initial ones are either introducing methods, or incorporating previously published methods. Since then, it seems that the biological implications --- rather than just reporting differences has become more important. 
-
-I had thought of trying to correlate codon usage and acid sensitivity. To expand, I would look for SNPs (within AR system genes) and look if those SNPs relate to amino acids that can be made using multiple codons AND if yes, do certain codons (for the same amino acid) correlate to acid sensitivity / resistance (per Kat's pH work). However, Kat's pH work is only for B201 and B241. 
+Consider the following for future analysis: Certain amino acids can be synthesized in multiple ways. For example, look at Figure \ref{AA} for Arginine. Arginine can be made from the following codons (start from the inner ring and work your way out): CGT, CGC, CGA, CGG. It can also be made from AGG, AGA. This is an example of a 6-fold redundant amino acid. What I suggest is to find SNPs that are within genes of interest and fall in the 3rd codon position of 4-fold redundant amino acids. Once they have been located, determine whether there is a relationship between a particular codon and the flocculation/curli production/AR resistance-sensitivity/strain. It is very possible that this type of analysis \textbf{will not} bear fruit, therefore there needs to be some type of wet lab experiment that will land the manuscript in somewhere besides \textit{The Journal of Negative Results}.
 
 %All remaining contigs have been BLASTed --- but I have not parsed the thousands of results to find the best hit --- yet. Additionally, remaining contigs can be uploaded to the Center for Genomic Epidemiology site for use with their PlasmidFinder tool. I will have more to say about say about parsing the BLAST results and the PlasmidFinder results once I have looked more at the assemblies and the BLAST results. \\
+
+
 %you think? Also don't forget the CRISPR analysis in virulent genes for non AR analysis).
-\end{itemize}
-
-
-
 
 
 
@@ -767,7 +760,7 @@ I had thought of trying to correlate codon usage and acid sensitivity. To expand
 %  \end{minipage} 
 %  \begin{minipage}[b]{0.2\linewidth}
 %    \centering
-%    \includegraphics[width=.2\linewidth]{B306_B251_B505}
+%    \includegraphics[width=.2\linewidth]{B306_B251_B055}
 %    \vspace{4ex}
 %  \end{minipage} 
 %  \begin{minipage}[b]{0.2\linewidth}
