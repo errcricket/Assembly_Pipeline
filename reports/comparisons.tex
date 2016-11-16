@@ -1,0 +1,780 @@
+%\documentclass[11pt]{report}
+\documentclass[11pt]{article}
+%\documentclass[11pt]{scrreprt} \usepackage{blindtext} %\usepackage{showframe} 
+\usepackage{url}
+\usepackage{graphicx}
+\usepackage{color} 
+\usepackage{verbatim} 
+\usepackage{lscape} 
+\usepackage{enumerate}
+\usepackage{wrapfig}
+\usepackage{amsmath}
+\usepackage{setspace}
+\usepackage{sidecap}
+\usepackage{rotating}
+\usepackage{epstopdf}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\setboolean{@twoside}{false}
+\usepackage{pdfpages}
+\usepackage{fullpage}
+\usepackage[margin=0.65in]{geometry}
+
+%\usepackage[hidelinks]{hyperref} 
+%\hypersetup{
+%    colorlinks=true,
+%    linkcolor=blue,
+%    filecolor=magenta,      
+%    urlcolor=cyan,
+%}
+
+\renewcommand*\familydefault{\rmdefault}
+%\usepackage{smartdiagram}
+
+%\topmargin 0.0in
+%\oddsidemargin 0.5in
+%\evensidemargin 0.5in
+%\textwidth 7in 
+%\textheight 8in
+%
+%\topmargin 0.0cm
+%\oddsidemargin 0.5cm
+%\evensidemargin 0.5cm
+%\textwidth 17cm 
+%\textheight 22cm
+
+\newcommand*\wrapletters[1]{\wr@pletters#1\@nil}
+\def\wr@pletters#1#2\@nil{#1\allowbreak\if&#2&\else\wr@pletters#2\@nil\fi}
+\makeatother
+\begin{document}
+
+%----------------Opening Page----------------------
+\begin{center}
+\vspace{5.75cm}
+\Huge{Comparison of 26 \textit{E. coli} strains}\\
+\vspace{6.75cm}
+
+\normalsize{by} \\
+\vspace{.75cm}
+\normalsize{Erin Ren\'{e}e REICHENBERGER, Ph.D.} \\
+\vspace{4.75cm}
+\large{\normalsize{\today}} \\
+
+\vspace{2.75cm}
+\normalsize{Molecular Characterization of Foodborne Pathogens Research Unit}\\   % type title between braces
+\normalsize{USDA, Agricultural Research Service} \\
+\normalsize{Eastern Regional Research Center} \\
+\normalsize{600 E. Mermaid Lane | Wyndmoor, PA 19038 USA}
+\end{center}
+\clearpage
+
+\section*{Report Organization}
+Rather than present a typical report (abstract, intro, methods/materials, results, conclusion/discussion), I will go over what has been done up to this point, and I will add any comments, questions, and suggestions directly within that portion of the report rather than placing all similar points in a more typical section.\\
+
+This report deals with 26 Illumina-sequenced \textit{Escherichia coli} strains that are --- with one exception --- of the O157:H7 serotype. The table below lists the source of each strain. \textit{As an aside, it may be wise to get the year for all outbreaks.}\\
+
+\subsection*{Demographics}
+\begin{table}[h!]\small
+\centering
+\begin{tabular}{c|l}
+\hline
+\textbf{Strain} & \textbf{Isolation Source} \\
+\hline
+B055* & Human isolate                              \\
+B201 & Apple cider, October 2002                  \\
+B202 & Salami, October 2002                       \\
+B204 & Pork, September 2002                       \\
+B241 & Bovine carcass                             \\
+B244 & Human outbreak                             \\
+B245 & Human outbreak                             \\
+B246 & Human outbreak                             \\
+B247 & Human outbreak                             \\
+B249 & Human outbreak                             \\
+B250 & Human outbreak                             \\
+B251 & Human outbreak                             \\
+B263 & Human, sporadic, 1997                      \\
+B264 & Apple juice, associated with 1996 outbreak \\
+B265 & Human, outbreak, 1999, lettuce             \\
+B266 & Human, outbreak, 1999, taco meat           \\
+B269 & Human, outbreak, 2000, waterborne          \\
+B271 & Human, outbreak, 2003, leafy vegetable     \\
+B273 & Human, outbreak, 2002, leafy vegetable     \\
+B296 & Human, outbreak, 2005, leafy vegetable     \\
+B301 & Water                                      \\
+B306 & Water                                      \\
+B307 & Water                                      \\
+B309 & Water                                      \\
+B311 & Human, outbreak, 2006, leafy vegetable     \\
+B349 & Spinach                                   
+\end{tabular}
+\caption{Isolation source for \textit{E. coli} strains (* Non-O157:H7 strain).}
+\label{demographics}
+\end{table}
+
+\section*{Genome Assembly}
+Before genome comparisons can occur, each strain must be assembled. The assembly process is as follows: 
+
+\begin{itemize}
+\item De-novo assembly of Illumina reads with SPAdes.
+\item Improvement of draft assemblies with Pilon.
+\item Align contigs to reference genome (generally EDL933 chromosome, with the exception of B055 which was aligned to the K-12 genome) with Mauve.
+\item Reorder contigs to reference with Mauve.
+\end{itemize}
+
+At this point there is generally a pretty good draft assembly for the chromosome. Now each alignment must be manually inspected to find all unmatched contigs. These un-aligned contigs are placed into a separate file and are aligned to the plasmid and reordered as described previously. This process is repeated for any remaining unmatched contigs by mapping/aligning them to the small Sakai plasmid (3306 bp). Any remaining unmarried contigs are BLASTed for hits. \\
+
+Below is a brief description of the reference genomes. Note the names and genome sizes. \\
+
+== CP008957.gbk ==   \\
+LOCUS       CP008957             5547323 bp    DNA     circular BCT 19-AUG-2014 \\
+DEFINITION  Escherichia coli O157:H7 str. EDL933, complete genome. \\
+\\
+== CP008958.gbk == \\
+LOCUS       CP008958               92076 bp    DNA     circular BCT 26-JUL-2016   \\
+DEFINITION  Escherichia coli O157:H7 str. EDL933 plasmid, complete sequence.   \\
+ \\
+== NC\_002127.gbk == \\
+LOCUS       NC\_002127               3306 bp    DNA     circular CON 03-AUG-2016   \\
+DEFINITION  Escherichia coli O157:H7 str. Sakai plasmid pOSAK1, complete   \\
+ \\
+== U00096.gbk == \\
+LOCUS       U00096               4641652 bp    DNA     circular BCT 01-AUG-2014   \\
+DEFINITION  Escherichia coli str. K-12 substr. MG1655, complete genome.   \\
+
+\subsection*{Chromosome Alignment}
+The following image shows the chromosome alignments (and their legend) of the 26 strains of \textit{E. coli}. With the exception of B055 (1st inner ring) --- whose draft assembly was created by K-12 genome alignment, the strains were aligned to the EDL933 chromosomal genome (outer red ring). 
+
+\begin{figure}[h!]\normalsize %figure 1
+\centering
+\includegraphics[width=.4\linewidth]{legend}
+%\includegraphics[width=.5\linewidth]{/home/cricket/Projects/Assembly_Pipeline/BRIG/chromosome/CP008957/legend.png}
+\caption{BRIG legend. Order starts from bottom left (EDL933 red ring) to top left, from left to right (GC Content is the last ring).}
+\label{brig_legend}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[h!]\normalsize %figure 2
+\centering
+\includegraphics[scale=0.15]{/home/cricket/Projects/Assembly_Pipeline/BRIG/chromosome/CP008957/CP008957_noLegend.png}
+\caption{Assembly comparison of the 26 \textit{E. coli} strains (chromosome). Note the incompleteness of the 6th ring from the inside (dark blue).}
+\label{chromosomeAlignment}
+\end{figure}
+\clearpage
+
+In Figure~\ref{chromosomeAlignment}, note the incompleteness of the 6th ring from the inside. This is for strain B296 --- and it is clear that I still need to work on coming up with a better assembly. This file has many contigs, but for some reason, Mauve only recognizes a few of the contigs --- so it may not be an issue of a better assembly, it may be a file corruption issue.  \\
+
+If you notice in Figure~\ref{chromosomeAlignment}, strain B204 does not seem to align well with the ELD933 strain. Very briefly, the mapping/contig rearrangement is an iterative process. Each rearrangement will be improved up until it becomes impossible to move a contig without disrupting the overall alignment. Most of the strains had a draft assembly after 3 or 4 rearrangements, strain B204 had upwards of 8 rearrangements. The following images show the current draft assemblies for strain B204 when aligned to strains EDL933, EC4115, and Sakai. \textit{Note: The red bunch of lines at the end of the alignment are contigs that did not map to the chromosome, and likely belong to plasmid(s).}
+
+\begin{figure}[h!]\normalsize %figure 3
+\centering
+\includegraphics[scale=0.25]{../B204/mauve/204_EDL933.png}
+\caption{Strain B204 alignment to strain EDL933.}
+\label{alignment_EDL933}
+\end{figure}
+
+\begin{figure}[h!]\normalsize %figure 4
+\centering
+\includegraphics[scale=0.25]{../B204/mauve/204_EC4115.png}
+\caption{Strain B204 alignment to strain EC4115.}
+\label{alignment_EC4115}
+\end{figure}
+
+\begin{figure}[h!]\normalsize %figure 5
+\centering
+\includegraphics[scale=0.25]{../B204/mauve/204_Sakai.png}
+\caption{Strain B204 alignment to Sakai strain.}
+\label{alignment_Sakai}
+\end{figure}
+
+\clearpage
+
+After looking at the lackluster alignment images, I decided to align the draft assembly to the K-12 genome. Of all four assemblies, B204 mapped best to the K-12 genome --- even though the Center for Genomic Epidemiology website has been used to confirm that the B204 strain tests positive for O157:H7. Additionally, Gian Marco and I did a simple experiment with rainbow agar to confirm in the lab that this is O157:H7 strain. Based on the alignment images, \textbf{I am suggesting that this strain be sequenced with PacBio technology}. I do not currently have a pipeline for hybrid-technology assemblies (\textit{Illumina and PacBio}), but I should be able to accomplish this without too much difficulty. It should also be noted that this is the one strain that originated from swine. 
+
+\begin{figure}[h!]\normalsize %figure 6
+\centering
+\includegraphics[scale=0.25]{../B204/mauve/204_K12.png}
+\caption{Strain B204 alignment to K-12 strain.}
+\label{alignment_K12}
+\end{figure}
+
+\subsection*{Plasmid Alignments}
+Any remaining contigs were aligned to either the EDL933 plasmid and/or the Sakai (NC\_002127) plasmid. The following images show these alignments for the 26 strains of \textit{E. coli}. With the exception of B055 (1st inner ring Figure~\ref{plasmid_alignment_1}) --- whose draft assembly was created by K-12 genome alignment, the strains were aligned to an O157:H7 plasmid. 
+
+\begin{figure}[h!]\normalsize %figure 7
+\centering
+\includegraphics[scale=0.11]{/home/cricket/Projects/Assembly_Pipeline/BRIG/plasmid/NC_002127/NC_002127_cropped.png}
+\caption{Assembly comparison of the 26 \textit{E. coli} strains (Sakai plasmid). The 6 inner rings are the same strains as the 6 poorly-matching rings in Figure~\ref{plasmid_alignment_1}.}
+\label{plasmid_alignment_2}
+\end{figure}
+
+\begin{figure}[h!]\normalsize %figure 8
+\centering
+\includegraphics[scale=0.15]{/home/cricket/Projects/Assembly_Pipeline/BRIG/plasmid/EDL933/ELD933_nolegend.png}
+\caption{Assembly comparison of the 26 \textit{E. coli} strains (EDL933 plasmid). Note the inner 6 rings that do not seem to match the reference. (See Figure~\ref{brig_legend} for legend).}
+\label{plasmid_alignment_1}
+\end{figure}
+\clearpage
+
+%\begin{figure}[h!]\normalsize %figure 8
+%\centering
+%\includegraphics[width=.5\linewidth]{legend}
+%\caption{BRIG legend. Order starts from bottom left (EDL933 red ring) to top left, from left to right (GC Content is the last ring).}
+%\label{brig_legend}
+%\end{figure}
+%\vspace{-1em}
+
+\subsubsection*{Contig and BLAST}
+All remaining contigs post-alignment have been BLASTed --- but I have not parsed the thousands of results to find the best hit --- yet. Additionally, remaining contigs can be uploaded to the Center for Genomic Epidemiology site for use with their PlasmidFinder tool. I will have more to say about say about parsing the BLAST results and the PlasmidFinder results once I have looked more at the assemblies and the BLAST results. \\
+
+\section*{Analysis}
+\subsection*{Phylogeny Assessment}
+The phylogenetic tree file was created in Mauve (\textbf{ACHTUNG!!! This may not be the final tree file}). The clustering portion of this analysis has not been completed. For the moment, each leaf on the tree is colored in the following figures by curli production, flocculation, and strain source (resp.). A demographics table of this information is in the table below. \\
+
+\begin{table}[h!]\tiny
+\centering
+\begin{tabular}{c|c|c|c|c|c}
+\hline
+\multicolumn{1}{l}{\textbf{\textit{E\_coli} strains}} & \multicolumn{1}{l}{\textbf{Mean\_log10CFU/ml}} & \multicolumn{1}{l}{\textbf{SD (log10CFU/ml)}} & \multicolumn{1}{l}{\textbf{M9GT\_Flocculation}} & \multicolumn{1}{l}{\textbf{Curli\_Production}} & \textbf{Source} \\
+\hline
+B505 & NA 	& NA   & NA & NA & Human isolate                                 \\
+B201 & 2.05 & 0.43 & P & P+ &  Apple cider, October 2002                     \\
+B202 & 0.29 & 0.03 & N & N &   Salami, October 2002                          \\
+B204 & 0.17 & 0.03 & N & P &   Pork, September 2002                          \\
+B241 & 0.13 & 0.06 & N & N &   Bovine carcass                                \\
+B244 & 0.15 & 0.02 & N & P &   Human outbreak                                \\
+B245 & 0.22 & 0.26 & N & N &   Human outbreak                                \\
+B246 & 1.06 & 0.45 & P & P &   Human outbreak                                \\
+B247 & 0.23 & 0.23 & N & P &   Human outbreak                                \\
+B249 & 0.17 & 0.06 & N & N &   Human outbreak                                \\
+B250 & 0.65 & 0.17 & P & N &   Human outbreak                                \\
+B251 & 0.16 & 0.07 & N & N &   Human outbreak                                \\
+B263 & 0.84 & 0.13 & P & P &   Human, sporadic, 1997                         \\
+B264 & 0.21 & 0.08 & N & P &   Apple juice, associated with 1996 outbreak    \\
+B265 & 0.27 & 0.07 & N & N &   Human, outbreak, 1999, lettuce                \\
+B266 & 0.16 & 0.12 & P & N &   Human, outbreak, 1999, taco meat              \\
+B269 & 0.09 & 0.04 & N & P &   Human, outbreak, 2000, waterborne             \\
+B271 & 1.00 & 0.13 & P & P+ &  Human, outbreak, 2003, leafy vegetable        \\
+B273 & 0.25 & 0.03 & N & N &   Human, outbreak, 2002, leafy vegetable        \\
+B296 & 0.37 & 0.29 & N & N &   Human, outbreak, 2005, leafy vegetable        \\
+B301 & 0.11 & 0.03 & N & N &   Water                                         \\
+B306 & 0.19 & 0.11 & N & N &   Water                                         \\
+B307 & 1.03 & 0.27 & P & P+ &  Water                                         \\
+B309 & 0.31 & 0.08 & N & N &   Water                                         \\
+B311 & 0.49 & 0.16 & N & N &   Human, outbreak, 2006, leafy vegetable        \\
+B349 & 0.28 & 0.15 & N & N &   Spinach                                       \\
+\hline
+\end{tabular}
+\caption{Table for strain characteristics. *Note: All strains save for B505 (K-12) are O157:H7.}
+\label{demographics}
+\end{table}
+
+
+%  \begin{minipage}[b]{0.2\linewidth}
+\begin{figure}[ht!]\normalsize %figure 10
+\centering
+\includegraphics[scale=0.53]{../corpus_assembly/corpus_source.png}
+\caption{Phylogenetic Tree -- colored by source (see Table~\ref{demographics})}
+\label{source_tree}
+\end{figure}
+%\clearpage
+
+\begin{figure}[ht!]\normalsize %figure 11
+\centering
+\includegraphics[scale=0.33]{../corpus_assembly/Curli}
+\caption{Phylogenetic Tree -- colored by curli production (see Table~\ref{demographics}). P: Purple, P+: Red, N: Orange, Reference: Blue.}
+\label{curli_tree}
+\end{figure}
+\clearpage
+
+\begin{figure}[ht!]\normalsize %figure 12
+\centering
+\includegraphics[scale=0.53]{../corpus_assembly/Flocculation}
+\caption{Phylogenetic Tree -- colored by flocculation (see Table~\ref{demographics}). P: Purple (Present), N: Gray (Not Present), Reference: Blue.}
+\label{flocculation_tree}
+\end{figure}
+
+Although I see no pattern linking the trees and the source/curli production/flocculation, there may be a new tree that is produced at a later date. Additionally, there is still the principal component analysis that could show how (and if) the strains cluster together based on some metric. For now, the previous figures show the evolutionary relationship among the strains.\\
+
+\subsection*{SNPs}
+As an example, the number of SNPs for \textbf{1} strain (when compared to EDL933), is over 86,000 SNPs. Not only would this be a very cumbersome exercise, the biological question should be narrowed to a handful of genes. I will have more to say about this at the end of this report. \\
+
+\subsection*{LS-BSR}
+There are multiple ways in which to compare two or more gene sequences such as sequence identity. This section compares some acid resistance and virulence genes using something called BLAST score ratio (BSR). \textit{The BSR is computed as follows. The BLAST raw score for each reference peptide against itself is stored as the reference score. The BSR is calculated by dividing the query BLAST raw score score by the reference score for each reference peptide}. As there is an interest in the acid resistance systems and possibly the virulence genes, I found as many of the genes as I could in the K-12, EDL933, EC4115, and Sakai genomes. The genes (x-axis) are ordered according to reference genome (there may be multiple occurrences of the same gene, but genes are ordered by the reference genome, not the gene name).
+
+\subsection*{Acid Resistance}
+\begin{figure}[h!]\normalsize %figure 10
+\centering
+\includegraphics[scale=0.63]{/home/cricket/Projects/Assembly_Pipeline/ls_bsr/AR/AR_heatmap.png}
+\caption{BSR values for genes (involved in acid resistance) by genome. Note the genes are ordered according to the reference genome from which the sequence was derived. *This image is for the chromosome.}
+\label{ARheatmap}
+\end{figure}
+\clearpage
+
+\subsection*{Virulence}
+\begin{figure}[ht!]\normalsize %figure 11
+\centering
+\includegraphics[scale=0.63]{/home/cricket/Projects/Assembly_Pipeline/ls_bsr/virulence/Virulence_heatmap.png}
+\caption{BSR values for some virulent genes by genome. Note the genes are ordered according to the reference genome from which the sequence was derived. *This image is for the chromosome.}
+\label{VirrulenceHeatMap}
+\end{figure}
+
+\subsection*{Phage}
+The EDL933 genome was run though the PHASTER web server to rapidly identify and annotate the prophage sequences within bacterial genomes and plasmids. Once the phage regions and the genes within those regions were identified, the genes were converted into a multi-sequence fasta file that was then used an input to the ls-bsr pipeline. Once the ls-bsr values were available for the strains, heatmaps were created to show similarity/variability. 
+
+\begin{figure}[ht!]\normalsize %figure 12
+\centering
+\includegraphics[scale=0.43]{/home/cricket/Projects/Assembly_Pipeline/reports/circular_genome_chromosome.png}
+\caption{Identified (PHASTER webtool) phage regions for EDL933 chromosome.}
+\label{phage_regions}
+\end{figure}
+
+\begin{figure}[ht!]\normalsize %figure 13
+\centering
+\includegraphics[scale=0.43]{/home/cricket/Projects/Assembly_Pipeline/ls_bsr/phage/lsbsr_results/images/heatmap_phage_region_1.png} 
+\caption{BSR values for by phage region 1 (identified by PHASTER webserver tool). *This image is for the chromosome.}
+\label{phage_1}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[ht!]\normalsize %figure 14
+\centering
+\includegraphics[scale=0.43]{/home/cricket/Projects/Assembly_Pipeline/ls_bsr/phage/lsbsr_results/images/heatmap_phage_region_2.png} 
+\caption{BSR values for by phage region 2 (identified by PHASTER webserver tool). *This image is for the chromosome.}
+\label{phage_2}
+\end{figure}
+
+\begin{figure}[ht!]\normalsize %figure 15
+\centering
+\includegraphics[scale=0.43]{/home/cricket/Projects/Assembly_Pipeline/ls_bsr/phage/lsbsr_results/images/heatmap_phage_region_3.png} 
+\caption{BSR values for by phage region 3 (identified by PHASTER webserver tool). *This image is for the chromosome.}
+\label{phage_3}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[ht!]\normalsize %figure 16
+\centering
+\includegraphics[scale=0.43]{/home/cricket/Projects/Assembly_Pipeline/ls_bsr/phage/lsbsr_results/images/heatmap_phage_region_4.png} 
+\caption{BSR values for by phage region 4 (identified by PHASTER webserver tool). *This image is for the chromosome.}
+\label{phage_4}
+\end{figure}
+
+\begin{figure}[ht!]\normalsize %figure 17
+\centering
+\includegraphics[scale=0.43]{/home/cricket/Projects/Assembly_Pipeline/ls_bsr/phage/lsbsr_results/images/heatmap_phage_region_5.png} 
+\caption{BSR values for by phage region 5 (identified by PHASTER webserver tool). *This image is for the chromosome.}
+\label{phage_5}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[ht!]\normalsize %figure 18
+\centering
+\includegraphics[scale=0.43]{/home/cricket/Projects/Assembly_Pipeline/ls_bsr/phage/lsbsr_results/images/heatmap_phage_region_6.png} 
+\caption{BSR values for by phage region 6 (identified by PHASTER webserver tool). *This image is for the chromosome.}
+\label{phage_6}
+\end{figure}
+
+\begin{figure}[ht!]\normalsize %figure 19
+\centering
+\includegraphics[scale=0.43]{/home/cricket/Projects/Assembly_Pipeline/ls_bsr/phage/lsbsr_results/images/heatmap_phage_region_7.png} 
+\caption{BSR values for by phage region 7 (identified by PHASTER webserver tool). *This image is for the chromosome.}
+\label{phage_7}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[ht!]\normalsize %figure 20
+\centering
+\includegraphics[scale=0.43]{/home/cricket/Projects/Assembly_Pipeline/ls_bsr/phage/lsbsr_results/images/heatmap_phage_region_8.png} 
+\caption{BSR values for by phage region 8 (identified by PHASTER webserver tool). *This image is for the chromosome.}
+\label{phage_8}
+\end{figure}
+
+\begin{figure}[ht!]\normalsize %figure 21
+\centering
+\includegraphics[scale=0.43]{/home/cricket/Projects/Assembly_Pipeline/ls_bsr/phage/lsbsr_results/images/heatmap_phage_region_9.png} 
+\caption{BSR values for by phage region 9 (identified by PHASTER webserver tool). *This image is for the chromosome.}
+\label{phage_9}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[ht!]\normalsize %figure 22
+\centering
+\includegraphics[scale=0.43]{/home/cricket/Projects/Assembly_Pipeline/ls_bsr/phage/lsbsr_results/images/heatmap_phage_region_10.png} 
+\caption{BSR values for by phage region 10 (identified by PHASTER webserver tool). *This image is for the chromosome.}
+\label{phage_10}
+\end{figure}
+
+\begin{figure}[ht!]\normalsize %figure 23 
+\centering
+\includegraphics[scale=0.43]{/home/cricket/Projects/Assembly_Pipeline/ls_bsr/phage/lsbsr_results/images/heatmap_phage_region_11.png} 
+\caption{BSR values for by phage region 11 (identified by PHASTER webserver tool). *This image is for the chromosome.}
+\label{phage_11}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[ht!]\normalsize %figure 24
+\centering
+\includegraphics[scale=0.43]{/home/cricket/Projects/Assembly_Pipeline/ls_bsr/phage/lsbsr_results/images/heatmap_phage_region_12.png} 
+\caption{BSR values for by phage region 12 (identified by PHASTER webserver tool). *This image is for the chromosome.}
+\label{phage_12}
+\end{figure}
+
+\begin{figure}[ht!]\normalsize %figure 25
+\centering
+\includegraphics[scale=0.43]{/home/cricket/Projects/Assembly_Pipeline/ls_bsr/phage/lsbsr_results/images/heatmap_phage_region_13.png} 
+\caption{BSR values for by phage region 13 (identified by PHASTER webserver tool). *This image is for the chromosome.}
+\label{phage_13}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[ht!]\normalsize %figure 26
+\centering
+\includegraphics[scale=0.43]{/home/cricket/Projects/Assembly_Pipeline/ls_bsr/phage/lsbsr_results/images/heatmap_phage_region_14.png} 
+\caption{BSR values for by phage region 14 (identified by PHASTER webserver tool). *This image is for the chromosome.}
+\label{phage_14}
+\end{figure}
+
+\begin{figure}[ht!]\normalsize %figure 27
+\centering
+\includegraphics[scale=0.43]{/home/cricket/Projects/Assembly_Pipeline/ls_bsr/phage/lsbsr_results/images/heatmap_phage_region_15.png} 
+\caption{BSR values for by phage region 15 (identified by PHASTER webserver tool). *This image is for the chromosome.}
+\label{phage_15}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[ht!]\normalsize %figure 28
+\centering
+\includegraphics[scale=0.43]{/home/cricket/Projects/Assembly_Pipeline/ls_bsr/phage/lsbsr_results/images/heatmap_phage_region_16.png} 
+\caption{BSR values for by phage region 16 (identified by PHASTER webserver tool). *This image is for the chromosome.}
+\label{phage_16}
+\end{figure}
+
+\begin{figure}[ht!]\normalsize %figure 29
+\centering
+\includegraphics[scale=0.43]{/home/cricket/Projects/Assembly_Pipeline/ls_bsr/phage/lsbsr_results/images/heatmap_phage_region_17.png} 
+\caption{BSR values for by phage region 17 (identified by PHASTER webserver tool). *This image is for the chromosome.}
+\label{phage_17}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[ht!]\normalsize %figure 14
+\centering
+\includegraphics[scale=0.43]{/home/cricket/Projects/Assembly_Pipeline/ls_bsr/phage/lsbsr_results/images/heatmap_phage_region_18.png} 
+\caption{BSR values for by phage region 18 (identified by PHASTER webserver tool). *This image is for the chromosome.}
+\label{phage_18}
+\end{figure}
+\clearpage
+
+\subsection*{Core and Accessory Genomes}
+All genes for the 25 strains (not including B505 (K-12)) were collected. In total, there were 7,073 genes amongst the 25 genomes. Each genome was searched for each gene to determine its presence/absence. As there were over seven thousand genes, it is not practically possible to have each gene \textit{easily} detectable. The following image shows the presence and absence for each of the genes and should be used to easily detect patterns.  
+
+\begin{figure}[ht!]\normalsize %figure 15
+\centering
+\includegraphics[scale=0.63]{/home/cricket/Projects/Assembly_Pipeline/reports/pangenome_presence_absence.png}
+\caption{Presence and absence for all genes found in the O157:H7 strains.}
+\label{presence_absence}
+\end{figure}
+
+For example, it is clear from the image that strain B296 is very different from the other strains. As this is the genome that may have the corrupted file, the figure reflects a known problem. Additionally, B204 is distinct from the other strains --- which is also reflective of previous comments/notes.
+
+
+\section*{Future Work, Analysis, Comments, and Concerns}
+\subsection*{Strains}
+\begin{itemize}
+\item Since strain B505 is a K-12 strain, I believe that it should be removed from future analysis, and that it should be submitted (if it has not already) to NCBI. 
+\item Strain B204 should be sequenced using PacBio technology. The reads can then be employed with the Illumina reads to make a hybrid assembly.
+\item Either determine whether the assembly for strain B296 is corrupted, and if not, another attempt should be made to assembly strain B296.
+\end{itemize}
+
+\subsection*{Analysis}
+There is so much more analysis that I can do and that needs to be done, but before I start down those paths, there needs to be a plan. Having said that, here is a short list of things I believe need to be done.
+
+\begin{itemize}
+\item Identifying the core and accessory genes
+\item Determining the number of plasmids for each strain
+\item Identifying the SNPs within the relevant genes
+\end{itemize}
+
+Consider the following for future analysis: Certain amino acids can be synthesized in multiple ways. For example, look at Figure \ref{AA} for Arginine. Arginine can be made from the following codons (start from the inner ring and work your way out): CGT, CGC, CGA, CGG. It can also be made from AGG, AGA. This is an example of a 6-fold redundant amino acid. What I suggest is to find SNPs that are within genes of interest and fall in the 3rd codon position of 4-fold redundant amino acids. Once they have been located, determine whether there is a relationship between a particular codon and the flocculation/curli production/AR resistance-sensitivity/strain. It is very possible that this type of analysis \textbf{will not} bear fruit, therefore there needs to be some type of wet lab experiment that will land the manuscript in somewhere besides \textit{The Journal of Negative Results}.
+
+\begin{figure}[h!]\normalsize %figure 11
+\centering
+\includegraphics[scale=0.4]{/home/cricket/Projects/Assembly_Pipeline/reports/AA_Circle.png}
+\caption{Amino Acid Codon Wheel. The inner circle represents the first nucleotide in codon, the second circle represents the second codon nucleotide, and the third circle signifies the third (wobble) codon nucleotide. The remaining circles (from inside to outside) contains the amino acid names, the 3-letter abbreviation, and the letter that signifies the amino acid.}
+\label{AA}
+\end{figure}
+\clearpage
+
+\subsection*{Questions}
+\begin{itemize}
+\item With the exception of B201 and B241, have any of the strains been submitted to Genbank?
+\item I grabbed the list of genes that were presented in Kat's manuscript. They appear to have the nomenclature given in the K-12 genome. If the genes were selected based on K-12 literature, why was this genome targeted rather than EDL933, Sakai, or EC4115? 
+\item Based on the selection of the 26 strains and your work and the work you and Kat did, in which AR system are you interested?
+
+\item There is an almost unlimited number of things that I can compare. However, what is the biological relevance of these strains and what is the biological question you want to answer? This is the most important question --- spending time reflecting on it will allow me to narrow my efforts while 
+
+The biggest question is where is the hook? There are a myriad of genome comparison papers out there. The initial ones are either introducing methods, or incorporating previously published methods. Since then, it seems that the biological implications --- rather than just reporting differences has become more important. 
+
+I had thought of trying to correlate codon usage and acid sensitivity. To expand, I would look for SNPs (within AR system genes) and look if those SNPs relate to amino acids that can be made using multiple codons AND if yes, do certain codons (for the same amino acid) correlate to acid sensitivity / resistance (per Kat's pH work). However, Kat's pH work is only for B201 and B241. 
+
+%All remaining contigs have been BLASTed --- but I have not parsed the thousands of results to find the best hit --- yet. Additionally, remaining contigs can be uploaded to the Center for Genomic Epidemiology site for use with their PlasmidFinder tool. I will have more to say about say about parsing the BLAST results and the PlasmidFinder results once I have looked more at the assemblies and the BLAST results. \\
+%you think? Also don't forget the CRISPR analysis in virulent genes for non AR analysis).
+\end{itemize}
+
+
+
+
+
+
+
+%\begin{figure}[h!]\footnotesize %figure 6
+%\centering
+%\includegraphics[scale=0.6]{../images/compound_11.png}
+%\caption{Colony survival by compound concentration for compound 11. The table below shows the p-values for a paired, non-parametric Wilcox test for comparing the two experiments.}
+%\label{compound_11}
+%
+%\vspace{1em}
+%\centering
+%\begin{tabular}{l|c|c}
+%\hline
+%\textbf{Time} & \textbf{Concentration} & \textbf{\textit{p-value}} \\
+%\hline
+%1 & 0 		& 0.002\\
+%5 & 0 		& 0.024\\
+%25 & 0 		& 0.005\\
+%1 & 0.02 	& 0.145\\
+%5 & 0.02 	& 0.63 \\
+%25 & 0.02 	& 0.81 \\
+%1 & 0.05 	& 0.005\\
+%5 & 0.05 	& NaN  \\
+%25 & 0.05 	& NaN  \\
+%1 & 0.1 	& 0.003\\
+%5 & 0.1 	& NaN  \\
+%25 & 0.1 	& NaN  \\
+%\end{tabular}
+%\label{paired_compound_11} 
+%
+%\end{figure}
+%\clearpage
+%
+%
+%
+%\subsection*{Analysis of Colony Survival by Compound Concentration: Boxplots}
+%There are two main items to observe --- does the colony count increase from one collection time to another, and is there a difference in colony counts between the two experiments. 
+%\subsubsection*{Colony Counts and Time}
+%In several of the figures, the colony count increases over time. This is not an expected result as the compounds should be killing the bacteria and the colony counts should decrease over time. Initial reasoning for these results included the re-growth of survivors --- possibly due to the different strains (e.g., some strains are more susceptible to quaternary compounds than others). However, after some discussion, it was decided that this was more likely a result of some abnormality in the experimental process. Therefore, it would be advisable to re-do some of the experiments.  \\
+%
+
+%\subsubsection*{Compound 12}
+%\begin{itemize}
+%\item Concentration 0.02. The replicate counts vary too much for this concentration (see time 5 minutes).
+%\end{itemize}
+%
+%
+%\section{Future Analysis}
+%The remaining 4 compounds will need to be included to the analysis, and I will need to perform the ANOVA analysis to determine the more efficient killer (at the lowest concentration). For the present, the below images shows the mean colony count for all compounds, concentrations, and collection time points.
+%
+%\begin{figure}[h!]\footnotesize %figure 6
+%\centering
+%\includegraphics[scale=0.6]{../images/corpus.png}
+%\caption{Mean colony counts for all compounds by concentration and collection time.}
+%\label{corpus}
+%\end{figure}
+%\clearpage
+
+
+%\subsection*{Colony Reduction by Compound}
+
+%
+%\begin{figure}[h!]\normalsize %figure 8
+%\centering
+%\includegraphics[scale=0.38]{../images/jejuni.png}
+%\caption{Histgram plot for jejuni genomes. The height of the bar is related to the number of features. Additionally, the genome size and gc-content are provided for each genome.}
+%\label{jejuni}
+%\end{figure}
+%
+%\begin{figure}[h!]\normalsize %figure 9
+%\centering
+%\includegraphics[scale=0.38]{../images/jejuni_categories.png}
+%\caption{Histgram plot for jejuni genomes colored by category (the height of the bar is related to the number of features).}
+%\label{jejuni_category}
+%\end{figure}
+%
+%\clearpage
+%
+%\begin{figure}[h!]\normalsize %figure 10
+%\centering
+%\includegraphics[scale=0.38]{../images/campylobacter_all.png}
+%\caption{Histgram plot for all genomes. The height of the bar is related to the number of features. Additionally, the genome size and gc-content are provided for each genome.}
+%\label{jejuni}
+%\end{figure}
+%
+%\begin{figure}[h!]\normalsize %figure 11
+%\centering
+%\includegraphics[scale=0.45]{../images/gene_comparison.png}
+%\caption{Gene map: Each entry corresponds to unique gene products (x-axis) of a strain/accession number (y-axis). Not all strains will have an entry for a gene product and is visualized by the color white. *Note: Map is not meant to detail the entry of each gene product, but to see quickly how similar one strain is to another by looking at the gene product expression. **Strains contain (combined) genetic contributions by plasmid (if applicable) and chromosome(s).}
+%\label{gene_map}
+%\end{figure}
+%
+%\clearpage
+%
+%\begin{figure}[h!]\normalsize %figure 12
+%\centering
+%\includegraphics[scale=0.38]{../images/coli_categories.png}
+%\label{coli_category}
+%\end{figure}
+%
+%\section*{Cursory Pathogenic Comparisons}
+%
+%\begin{figure}[h!]\normalsize %figure 10
+%\centering
+%\includegraphics[scale=0.38]{../images/pathogenetic_products.png}
+%\caption{Histgram plot for genomes containing pathogenic gene products. The height of the bar is related to the number of pathogenic features.}
+%\label{pathoproducts}
+%\end{figure}
+%
+%\begin{figure}[h!]\normalsize %figure 11
+%\centering
+%\includegraphics[scale=0.45]{../images/pathogenetic_products.png}
+%\caption{Histgram plot for genomes containing pathogenic genes. The height of the bar is related to the number of pathogenic features.}
+%\label{patho_genes}
+%\end{figure}
+%
+%\clearpage
+%
+%\section*{Cursory Comparisons}
+%The following heatmap figures show how similar the genomes are based genes and gene products.
+%\subsection*{STRAIN SIMILARITY (by strain's genes and gene products)}
+%The Jaccard Similarity Coefficient was calculated to determine how similar two strains were to one another \textit{based on their genes}. Preliminary steps included creating a list of all gene products found in strain X, and another list of gene products for strain Y. Each list (or set) was then curated to contain only unique entries. The Jaccard similarity coefficient is defined as the union of the two sets (total number of gene products found in both lists) divided by the intersection of the two sets (the total (combined) number of gene products from both lists) (Equation~\ref{jc}).
+%
+%\begin{equation}
+%\centering
+%\normalsize{\textsf{Jaccard}(Strain_{X}, Strain_{Y} ) = \frac{|Strain_{X} \cap Strain_{Y}|}{|Strain_{X} \cup Strain_{Y}|}}
+%%\caption{Venn diagram of both the union and intersection.}
+%%\caption{Formula for calculating the Jaccard similarity coefficient which is used to assess the similarity between two sets (e.g., environments).}
+%\label{jc}
+%\end{equation}
+%
+%\begin{figure}[h!]\normalsize %figure 13
+%\centering
+%\includegraphics[scale=0.1]{../images/intersection}
+%\includegraphics[scale=0.12]{../images/union}
+%\caption{Venn diagram of both the union and intersection.}
+%\label{venn}
+%\end{figure}
+%
+%\begin{figure}[h!]\normalsize %figure 14
+%\centering
+%\includegraphics[scale=0.45]{../images/genes_heatmap.png}
+%\caption{Heatmap of strain similarity based on Jaccard Similarity Coefficient (for similarity based on genes).}
+%\label{gene_heatmap}
+%\end{figure}
+%
+%\begin{figure}[h!]\normalsize %figure 15
+%\centering
+%\includegraphics[scale=0.45]{../images/products_heatmap.png}
+%\caption{Heatmap of strain similarity based on Jaccard Similarity Coefficient (for similarity based on gene products).}
+%\label{product_heatmap}
+%\end{figure}
+%
+%\subsection*{Genome Size vs. GC-content}
+%\begin{figure}[h!]\normalsize %figure 16
+%\centering
+%\includegraphics[scale=0.45]{../images/GC_vs_GenomeSize.png}
+%\caption{Scatter plot of genome size vs. GC-content for all Campylobacter strains.}
+%\label{GC_vs_Genomesize}
+%\end{figure}
+%
+%\clearpage
+%
+%\section*{GENE-BASED ANALYSIS: Campylobacter Strains}
+%%\includepdf[pages=-, offset=75 -75]{genes.pdf}
+%%\includepdf{genes.pdf}
+%\includepdf[pages={1-}]{genes.pdf}
+%
+%\subsection*{Unique Genes}
+%\begingroup
+%\obeylines
+%\noindent{\input{/home/cricket/Projects/DB_Campylobacter/output/cursory_statistics/unique_genes.txt}}
+%\endgroup%
+%
+%\subsection*{Unique Gene Products}
+%\begingroup
+%\obeylines
+%\noindent{\input{/home/cricket/Projects/DB_Campylobacter/output/cursory_statistics/unique_products.txt}}
+%\endgroup%
+%
+%
+%\input{/home/cricket/Projects/DB_Campylobacter/output/cursory_statistics/unique_genes.txt}
+%\vspace{1cm}
+
+\end{document}
+
+%\begin{figure}[ht] 
+%  \label{ fig7} 
+%  \begin{minipage}[b]{0.2\linewidth}
+%    \centering
+%    \includegraphics[width=.2\linewidth]{GC_Attributes}
+%    \vspace{4ex}
+%  \end{minipage}%%
+%  \begin{minipage}[b]{0.2\linewidth}
+%    \centering
+%    \includegraphics[width=.2\linewidth]{B241_B264_B265}
+%    \vspace{4ex}
+%  \end{minipage} 
+%  \begin{minipage}[b]{0.2\linewidth}
+%    \centering
+%    \includegraphics[width=.2\linewidth]{B296_B266_B307}
+%    \vspace{4ex}
+%  \end{minipage}%% 
+%  \begin{minipage}[b]{0.2\linewidth}
+%    \centering
+%    \includegraphics[width=.2\linewidth]{B269_B311_B273}
+%    \vspace{4ex}
+%  \end{minipage} 
+%  \begin{minipage}[b]{0.2\linewidth}
+%    \centering
+%    \includegraphics[width=.2\linewidth]{B250_B301_B0245}
+%    \vspace{4ex}
+%  \end{minipage} 
+%\end{figure}
+%
+%\begin{figure}[ht] 
+%  \label{ fig8} 
+%  \begin{minipage}[b]{0.2\linewidth}
+%    \centering
+%    \includegraphics[width=.2\linewidth]{B309_B263_B244}
+%    \vspace{4ex}
+%  \end{minipage} 
+%  \begin{minipage}[b]{0.2\linewidth}
+%    \centering
+%    \includegraphics[width=.2\linewidth]{B202_B349_B204}
+%    \vspace{4ex}
+%  \end{minipage} 
+%  \begin{minipage}[b]{0.2\linewidth}
+%    \centering
+%    \includegraphics[width=.2\linewidth]{B271_B0247_B0249}
+%    \vspace{4ex}
+%  \end{minipage} 
+%  \begin{minipage}[b]{0.2\linewidth}
+%    \centering
+%    \includegraphics[width=.2\linewidth]{B306_B251_B505}
+%    \vspace{4ex}
+%  \end{minipage} 
+%  \begin{minipage}[b]{0.2\linewidth}
+%    \centering
+%    \includegraphics[width=.2\linewidth]{EDL933_B201_B0246}
+%    \vspace{4ex}
+%  \end{minipage} 
+%\end{figure}
+
+
