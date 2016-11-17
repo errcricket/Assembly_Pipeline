@@ -71,7 +71,47 @@
 \section*{Report Organization}
 Rather than present a typical report (abstract, intro, methods/materials, results, conclusion/discussion), I will go over what has been done up to this point, and I will add any comments, questions, and suggestions directly within that portion of the report rather than placing all similar points in a more typical section.\\
 
-This report deals with 26 Illumina-sequenced \textit{Escherichia coli} strains that are --- with one exception --- of the O157:H7 serotype. The table below lists the source of each strain. \textit{As an aside, it may be wise to get the year for all outbreaks.}\\
+\section*{Sequencing Quality}
+This report deals with 26 Illumina-sequenced \textit{Escherichia coli} strains that are --- with one exception --- of the O157:H7 serotype. The paired-end fastq files for each strain were inspected for quality. In general, the quality of these files were nothing short of impressive --- required little to no filtering or trimming. The following images are the paired-end read quality for strain B264 --- pre (top) and post (bottom) quality filtering.
+
+\begin{center}
+\begin{figure}[ht] 
+  \label{ fig7} 
+  \begin{minipage}[b]{0.5\linewidth}
+    \centering
+    \includegraphics[scale=0.3]{/home/cricket/Projects/Assembly_Pipeline/reports/B264_R1.png}
+	\caption{Paired-Read 1}
+    \vspace{4ex}
+  \end{minipage}%%
+  \begin{minipage}[b]{0.5\linewidth}
+    \centering
+    \includegraphics[scale=0.3]{/home/cricket/Projects/Assembly_Pipeline/reports/B264_R2.png}
+	\caption{Paired-Read 2}
+    \vspace{4ex}
+  \end{minipage} 
+\end{figure}
+
+\vspace{-1em}
+
+\begin{figure}[ht] 
+  \label{fig8} 
+  \begin{minipage}[b]{0.5\linewidth}
+    \centering
+    \includegraphics[scale=0.3]{/home/cricket/Projects/Assembly_Pipeline/reports/B264_R1_filtered.png}
+	\caption{Quality-Filtered Paired-Read 1}
+    \vspace{4ex}
+  \end{minipage}%%
+  \begin{minipage}[b]{0.5\linewidth}
+    \centering
+    \includegraphics[scale=0.3]{/home/cricket/Projects/Assembly_Pipeline/reports/B264_R2_filtered.png}
+	\caption{Quality-Filtered Paired-Read 2}
+    \vspace{4ex}
+  \end{minipage} 
+\end{figure}
+\end{center}
+\clearpage
+
+The table below lists the source of each strain. \textit{As an aside, it may be wise to get the year for all outbreaks.}\\
 
 \subsection*{Demographics}
 \begin{table}[h!]\small
@@ -121,9 +161,9 @@ Before genome comparisons can occur, each strain must be assembled. The assembly
 \item Reorder contigs to reference with Mauve.
 \end{itemize}
 
-At this point there is generally a pretty good draft assembly for the chromosome. Now each alignment must be manually inspected to find all unmatched contigs. These un-aligned contigs are placed into a separate file and are aligned to the plasmid and reordered as described previously. This process is repeated for any remaining unmatched contigs by mapping/aligning them to the small Sakai plasmid (3306 bp). Any remaining unmarried contigs are BLASTed for hits. \\
+At this point there is generally a pretty good draft assembly for the chromosome. Now each alignment must be manually inspected to find all unmatched contigs. These un-aligned contigs are placed into a separate file and are aligned to the plasmid and reordered as described previously. This process is repeated for any remaining unmatched contigs by mapping/aligning them to the small Sakai plasmid (3306 bp). Any remaining unmarried contigs were BLASTed for hits and should be run through the PhageFinder web tool. \\
 
-Below is a brief description of the reference genomes. Note the names and genome sizes. \\
+Below is a brief description of the reference genomes used for this project. Note the names and genome sizes. \\
 
 == CP008957.gbk ==   \\
 LOCUS       CP008957             5547323 bp    DNA     circular BCT 19-AUG-2014 \\
@@ -142,7 +182,8 @@ LOCUS       U00096               4641652 bp    DNA     circular BCT 01-AUG-2014 
 DEFINITION  Escherichia coli str. K-12 substr. MG1655, complete genome.   \\
 
 \subsection*{Chromosome Alignment}
-The following image shows the chromosome alignments (and their legend) of the 26 strains of \textit{E. coli}. With the exception of B055 (1st inner ring) --- whose draft assembly was created by K-12 genome alignment, the strains were aligned to the EDL933 chromosomal genome (outer red ring). 
+The following image shows the chromosome alignments (and their legend*) of the 26 strains of \textit{E. coli}. With the exception of B055 (1st inner ring) --- whose draft assembly was created by K-12 genome alignment, the strains were aligned to the EDL933 chromosomal genome (outer red ring). \textit{*Note: The legend will serve for both the chromosome and EDL933 plasmid.}
+
 
 \begin{figure}[h!]\normalsize %figure 1
 \centering
@@ -162,9 +203,11 @@ The following image shows the chromosome alignments (and their legend) of the 26
 \end{figure}
 \clearpage
 
+For the BRIG (Blast Ring Image Generator) legend (Figure~\ref{brig_legend}), note the three colors for each listed strain. These represents the sequence identity percentages to the reference. A blank space in the BRIG image may represent missing regions or very low sequence identity scores. \\
+
 In Figure~\ref{chromosomeAlignment}, note the incompleteness of the 6th ring from the inside. This is for strain B296 --- and it is clear that I still need to work on coming up with a better assembly. This file has many contigs, but for some reason, Mauve only recognizes a few of the contigs --- so it may not be an issue of a better assembly, it may be a file corruption issue.  \\
 
-If you notice in Figure~\ref{chromosomeAlignment}, strain B204 does not seem to align well with the ELD933 strain. Very briefly, the mapping/contig rearrangement is an iterative process. Each rearrangement will be improved up until it becomes impossible to move a contig without disrupting the overall alignment. Most of the strains had a draft assembly after 3 or 4 rearrangements, strain B204 had upwards of 8 rearrangements. The following images show the current draft assemblies for strain B204 when aligned to strains EDL933, EC4115, and Sakai. \textit{Note: The red bunch of lines at the end of the alignment are contigs that did not map to the chromosome, and likely belong to plasmid(s).}
+If you notice in Figure~\ref{chromosomeAlignment}, strain B204 does not seem to align well with the ELD933 strain. Very briefly, the mapping/contig rearrangement is an iterative process (in Mauve alignment program). Each rearrangement will be improved up until it becomes impossible to move a contig without disrupting the overall alignment. Most of the strains had a draft assembly after 3 or 4 rearrangements, strain B204 had upwards of 8 rearrangements. The following images show the current draft assemblies for strain B204 when aligned to strains EDL933, EC4115, and Sakai. \textit{Note: The red bunch of lines at the end of the alignment are contigs that did not map to the chromosome, and likely belong to plasmid(s).}
 
 \begin{figure}[h!]\normalsize %figure 3
 \centering
@@ -189,7 +232,7 @@ If you notice in Figure~\ref{chromosomeAlignment}, strain B204 does not seem to 
 
 \clearpage
 
-After looking at the lackluster alignment images, I decided to align the draft assembly to the K-12 genome. Of all four assemblies, B204 mapped best to the K-12 genome --- even though the Center for Genomic Epidemiology website has been used to confirm that the B204 strain tests positive for O157:H7. Additionally, Gian Marco and I did a simple experiment with rainbow agar to confirm in the lab that this is O157:H7 strain. Based on the alignment images, \textbf{I am suggesting that this strain be sequenced with PacBio technology}. I do not currently have a pipeline for hybrid-technology assemblies (\textit{Illumina and PacBio}), but I should be able to accomplish this without too much difficulty. It should also be noted that this is the one strain that originated from swine. 
+After looking at the lackluster alignment images, I decided to align the draft assembly to the K-12 genome. Of all four assemblies, B204 mapped best to the K-12 genome --- even though the Center for Genomic Epidemiology website has been used to confirm that the B204 strain tested positive for O157:H7. Additionally, Gian Marco and I did a simple experiment with rainbow agar to confirm in the lab that this is O157:H7 strain (is contamination a possibility?). Based on the alignment images, \textbf{I am suggesting that this strain be sequenced with PacBio technology}. I do not currently have a pipeline for hybrid-technology assemblies (\textit{Illumina and PacBio}), but I should be able to accomplish this without too much difficulty. It should also be noted that this is the one strain that originated from swine. 
 
 \begin{figure}[h!]\normalsize %figure 6
 \centering
@@ -223,6 +266,8 @@ Any remaining contigs were aligned to either the EDL933 plasmid and/or the Sakai
 %\label{brig_legend}
 %\end{figure}
 %\vspace{-1em}
+
+In the third quadrant of Figure~\ref{plasmid_alignment_1}, a large gap can be seen. It could be that those strains are completely lacking the gene --- but what is more likely is that for those strain regions, the similarity to the reference is low enough that it appears white in color. 
 
 \subsubsection*{Contig and BLAST}
 All remaining contigs post-alignment have been BLASTed --- but I have not parsed the thousands of results to find the best hit --- yet. Additionally, remaining contigs can be uploaded to the Center for Genomic Epidemiology site for use with their PlasmidFinder tool. I will have more to say about say about parsing the BLAST results and the PlasmidFinder results once I have looked more at the assemblies and the BLAST results. \\
@@ -266,7 +311,7 @@ B349 & 0.28 & 0.15 & N & N &   Spinach                                       \\
 \hline
 \end{tabular}
 \caption{Table for strain characteristics. *Note: All strains save for B055 (K-12) are O157:H7.}
-\label{demographics}
+\label{demographics_2}
 \end{table}
 
 
@@ -297,7 +342,7 @@ B349 & 0.28 & 0.15 & N & N &   Spinach                                       \\
 Although I see no pattern linking the trees and the source/curli production/flocculation, there may be a new tree that is produced at a later date. Additionally, there is still the principal component analysis that could show how (and if) the strains cluster together based on some metric. For now, the previous figures show the evolutionary relationship among the strains.\\
 
 \subsection*{SNPs}
-As an example, the number of SNPs for \textbf{1} strain (when compared to EDL933), is over 86,000 SNPs. Not only would this be a very cumbersome exercise, the biological question should be narrowed to a handful of genes. I will have more to say about this at the end of this report. \\
+As an example, the number of SNPs for \textbf{1} strain (when compared to EDL933), is over 86,000 SNPs, and the total number of SNPs is around 1,970,794. Not only would this be a very cumbersome exercise, the biological question should be narrowed to a handful of genes. I will have more to say about this at the end of this report. \\
 
 \subsection*{LS-BSR}
 There are multiple ways in which to compare two or more gene sequences such as sequence identity or BLAST. This section compares some acid resistance and virulence genes using something called BLAST score ratio (BSR). \textit{The BSR is computed as follows. The BLAST raw score for each reference peptide against itself is stored as the reference score. The BSR is calculated by dividing the query BLAST raw score score by the reference score for each reference peptide}. As there is an interest in the acid resistance systems and possibly the virulence genes, I found as many of the genes (from Kat's manuscript) as I could in the K-12, EDL933, EC4115, and Sakai genomes. The genes (x-axis) are ordered according to reference genome \textit{(there may be multiple occurrences of the same gene, but genes are ordered by the reference genome, not the gene name).}
@@ -475,7 +520,7 @@ The EDL933 genome was run though the PHASTER web tool to rapidly identify and an
 \clearpage
 
 \subsection*{Core and Accessory Genomes}
-All genes for the 25 strains (excluding B055 (K-12)) were collected. In total, there were 7,073 genes amongst the 25 genomes. Each genome was searched for each gene to determine its presence/absence. As there were over seven thousand genes, it is not possible to \textit{easily} depict all genes in this image at once. The following image shows the presence and absence for each of the genes and should be used to quickly detect patterns.  
+All genes for the 25 strains (excluding B055 (K-12)) were collected. In total, there were 7,073 genes amongst the 25 genomes. Each genome was searched for all 7,073 genes to determine its presence/absence. As there were over seven thousand genes, it is not possible to \textit{easily} depict all genes in this image at once. The following image shows the presence and absence for each of the genes and should be used to quickly detect patterns.  
 
 \begin{figure}[ht!]\normalsize %figure 15
 \centering
@@ -502,8 +547,11 @@ There is so much more analysis that I can do and that needs to be done, but befo
 \subsection*{Questions}
 \begin{itemize}
 \item With the exception of B201 and B241, have any of the strains been submitted to Genbank?
+\item Is this focus of this research on acid resistance or virulence? I realize that to be an 
 \item I grabbed the list of genes that were presented in Kat's manuscript. They appear to have the nomenclature given in the K-12 genome. If the genes were selected based on K-12 literature, why was this genome targeted rather than EDL933, Sakai, or EC4115? 
 \item Based on the selection of the 26 strains and your work and the work you and Kat did, in which AR system are you interested, and which genes are affiliated with those systems?
+\item Do anybody know the outbreak dates for those strains without dates (see Tables~\ref{demographics}~\ref{demographics_2})?
+
 \end{itemize}
 
 There is an almost unlimited number of things that I can compare. However, here is the most important question: What is the biological relevance of these strains and what is the biological question you want to answer? The response should not be \textit{I want to see how these two strains vary}. That is a fun question to ask, but there have been a myriad of comparison papers published, that higher-impact journals are looking for something more than comparisons. The initial articles were either introducing methods or incorporating previously published methods. Since then, it seems that the biological implications --- rather than just reporting differences has become more important. Answering this question will allow me to narrow my efforts.
