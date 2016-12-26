@@ -36,13 +36,15 @@ out_file = out_file.replace('data', 'output')
 record = next(SeqIO.parse(genbank_file, 'genbank'))
 sequence = record.seq
 
-def get_aminoAcid(nucleotide_sequence, start_position, stop_position, complement_TF):
+def get_aminoAcid(nucleotide_sequence, start_position, stop_position, complement_TF, r_complement_TF):
 	gene_sequence = ''
 
-	if complement_TF == False:
+	if complement_TF == False and r_complement_TF == False:
 		gene_sequence = str(nucleotide_sequence[start:stop]) + '\n'
-	if complement_TF == True:
+	if complement_TF == True and r_complement_TF == False:
 		gene_sequence = str(nucleotide_sequence[start:stop].complement()) + '\n'
+	if complement_TF == True and r_complement_TF == True:
+		gene_sequence = str(nucleotide_sequence[start:stop].reverse_complement()) + '\n'
 
 	return(gene_sequence)
 
@@ -54,13 +56,17 @@ with open(out_file, 'w') as output_file:
 				sLine = line.split('\t') #split line for headers & start/stop position
 
 				complement = ''
+				reverse_complement = ''
 
 				location = sLine[0]
-				if 'complement' in location:
+				if 'complement' in location and 'reverse' not in location:
 					complement = True
 					location = location.replace('complement(', '')
 					location = location.replace(')', '')
-				else:
+				elif 'complement' in location and 'reverse' in location:
+					complement = False
+					reverse_complement = True
+				elif
 					complement = False
 
 				start = int(location.split('.')[0])
@@ -71,7 +77,7 @@ with open(out_file, 'w') as output_file:
 				header = header.replace(': ', '_')
 				header = header.replace(' ', '_') + '\n'
 	
-				Gene = get_aminoAcid(sequence, start, stop, complement)
+				Gene = get_aminoAcid(sequence, start, stop, complement, reverse_complement)
 				output_file.write(header)
 				output_file.write(Gene)
 
