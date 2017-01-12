@@ -64,31 +64,6 @@ function run_fastqc_corrected #run fastqc to check for quality
 #----------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-function get_sorted_bam_files
-{
-	export bwa_directory=$base_directory"/bwa_indices/"
-	export draft_assembly_file=$bwa_directory$base_directory".fa"
-	export sam_file=$base_directory".sam"
-	export sorted_prefix=$base_directory"_sorted"
-	export sorted_bam=$sorted_prefix".bam"
-	export sorted_bai=$sorted_prefix".bai"
-	export home_dir=/home/cricket/Projects/Assembly_Pipeline/
-
-    mkdir -p $bwa_directory 
-#	ln -sf $home_dir$spades_directory"scaffolds.fasta" $draft_assembly_file
-
-#	cd $bwa_directory
-#
-#	bwa index -p $base_directory -a is $base_directory".fa"
-#	bwa mem -t 20 $base_directory  $home_dir$corrected_forward_file $home_dir$corrected_reverse_file > $sam_file
-#	samtools view -bS $sam_file | samtools sort - $sorted_prefix
-#	samtools index $sorted_bam $sorted_bai 
-#	
-#	cd -
-}
-#----------------------------------------------------------------------------------------------------------------------------------------------------
-
-
 function run_pilon
 {
 	export pilon_directory=$base_directory"/pilon/"
@@ -121,67 +96,46 @@ function mauve_alignment
 }
 #----------------------------------------------------------------------------------------------------------------------------------------------------
 
-function copy_final_assembly
+#This is for IGV viewing and has been placed here to take advantage of the reference file assignment.
+function get_sorted_bam_files
 {
-	#This will copy over fasta files to end up with the last alignment fasta file
-	export IGV_directory=$base_directory"/IGV/"
-	mkdir -p $IGV_directory
+	export bwa_directory=$base_directory"/bwa_indices/"
+	export draft_assembly_file=$bwa_directory$base_directory".fa"
+	export sam_file=$base_directory".sam"
+	export bam_file=$base_directory".bam"
+	export sorted_prefix=$base_directory"_sorted"
+	export sorted_bam=$sorted_prefix".bam"
+	export sorted_bai=$sorted_prefix".bai"
+	export home_dir=/home/cricket/Projects/Assembly_Pipeline/
 
-	final_assembly=$IGV_directory$base_directory".fa"
+    mkdir -p $bwa_directory 
+	ln -sf $home_dir$spades_directory"scaffolds.fasta" $draft_assembly_file
 
-	for dir in ${mauve_directory[*]}
-	do
-		assemblies=($mauve_directory"*/*.fasta")
-		for assembly in ${assemblies[*]}
-		do
-			cp $assembly $final_assembly
-		done
-	done
-}
+	cd $bwa_directory
 
-#----------------------------------------------------------------------------------------------------------------------------------------------------
+	#This is for the .sai files
+	bwa aln -t 28 -f $base_directory"_1P.sai" $ref_file $corrected_forward_file 
+	bwa aln -t 28 -f $base_directory"_2P.sai" $ref_file $corrected_reverse_file 
 
+	#function create_sam_alignment
+	bwa mem -P -t 26 $ref_file Minus(fasta) $corrected_forward_file $corrected_reverse_file > $sam_file
 
-function index_final_assembly
-{
-	export final_assembly_file=$IGV_directory$base_directory".fa"
-	#echo $final_assembly_file
-	export sorted_bam=$base_directory"_sorted.bam"
+	#Convert from SAM to BAM format
+	samtools view -b -S -o $bam_file $sam_file
 
-	cd $IGV_directory
+	#bam_sort_index
+	samtools sort $bam_file $sorted_bam 
+	samtools index $sorted_bam 
 
-	echo $sorted_bam $sorted_bai
-	ln -sf $home_dir$reference_indices"" $draft_assembly_file
-
-	#bwa index -p $base_directory -a is $base_directory".fa"
-	#bwa mem -t 20 $base_directory  $home_dir$corrected_forward_file $home_dir$corrected_reverse_file > $sam_file
-
-	#bwa mem -t 20 $base_directory  $base_directory".fa" > $sam_file
-	#samtools view -bS $sam_file | samtools sort - $sorted_prefix
-	#samtools index $sorted_bam $sorted_bai 
-
+#	bwa index -p $base_directory -a is $base_directory".fa"
+#	bwa mem -t 20 $base_directory  $home_dir$corrected_forward_file $home_dir$corrected_reverse_file > $sam_file
+#	samtools view -bS $sam_file | samtools sort - $sorted_prefix
+#	samtools index $sorted_bam $sorted_bai 
+#	
 	cd -
 }
 #----------------------------------------------------------------------------------------------------------------------------------------------------
 
-function index_to_reference
-{
-	export reference_indices=reference_mapping_files
-	mkdir -p $reference_indices
-	
-#	cd $reference_indices
-
-	export sorted_bam=$base_directory"_sorted.bam"
-	export sorted_bai=$base_directory"_sorted.bai"
-#	echo $sorted_bam $sorted_bai
-
-#	bwa mem -t 20 $base_directory  $home_dir$corrected_forward_file $home_dir$corrected_reverse_file > $sam_file
-#	samtools view -bS $sam_file | samtools sort - $sorted_prefix
-#	samtools index $sorted_bam $sorted_bai 
-
-#	cd -
-}
-#----------------------------------------------------------------------------------------------------------------------------------------------------
 
 function separate_plasmid_chromosome
 {
@@ -195,17 +149,16 @@ function separate_plasmid_chromosome
 	
 	final_assembly=$prokka_directory$base_directory"_formatted.fa"
 
-	for dir in ${mauve_directory[*]}
-	do
-		assemblies=($mauve_directory"*/*.fasta")
-		for assembly in ${assemblies[*]}
-		do
-			fasta_formatter -i $assembly -o $final_assembly
-		done
-	done
+	#for dir in ${mauve_directory[*]}
+	#do
+	#	assemblies=($mauve_directory"*/*.fasta")
+	#	for assembly in ${assemblies[*]}
+	#	do
+	#		fasta_formatter -i $assembly -o $final_assembly
+	#	done
+	#done
 
 	contig_file=plasmid_contig_list.txt
-
 	#python separate_plasmids_chromosomes.py $base_directory $final_assembly $contig_file $chromosome_directory $plasmid_directory
 }
 #----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -214,7 +167,7 @@ function separate_plasmid_chromosome
 function remove_n_repeats
 {
 	export plasmid_file=$plasmid_directory$base_directory"_P.fa"
-	chromosome_file=$chromosome_directory$base_directory"_C.fa"
+	export chromosome_file=$chromosome_directory$base_directory"_C.fa"
 	#python replace_n_repeats.py $base_directory $chromosome_file $chromosome_directory $plasmid_file $plasmid_directory
 }
 #----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -222,7 +175,7 @@ function remove_n_repeats
 
 function align_plasmids
 {
-	export plasmid_alignment_directory=$plasmid_directory"/mauve/"
+	export plasmid_alignment_directory=$plasmid_directory"mauve/"
 
 	mkdir -p $plasmid_alignment_directory
 
@@ -242,29 +195,149 @@ function separate_plasmid_contigs
 	export plasmid_final_assembly_directory=$plasmid_directory"final_assembly/"
 	mkdir -p $plasmid_final_assembly_directory
 
-	final_assembly=$plasmid_final_assembly_directory$base_directory"_P.fa"
+	plasmid_final_assembly=$plasmid_final_assembly_directory$base_directory"_P.fa"
 
-	if [ $base_directory != B055 ] #|| [ $base_directory == B204 ]
-	then
-		for dir in ${plasmid_alignment_directory[*]}
+	for dir in ${plasmid_alignment_directory[*]}
+	do
+		assemblies=($plasmid_alignment_directory"alignment*/"$base_directory"_P.fa.fas")
+
+		for assembly in ${assemblies[*]}
 		do
-			assemblies=($plasmid_alignment_directory"alignment*/"$base_directory"_P.fa.fas")
-			for assembly in ${assemblies[*]}
-			do
-				echo $assembly
-				#cp $assembly $final_assembly
-			done
+			fasta_formatter -i $assembly -o $plasmid_final_assembly
 		done
+	done
+
+	contig_file=aligned_plasmid_contig_list.txt
+
+	if [ $base_directory == B296 ]
+	#if [ $base_directory != B055 ]
+	then
+		python separate_plasmids_chromosomes.py $base_directory $final_assembly $contig_file 0 $plasmid_final_assembly_directory
+		echo $base_directory
+		echo $final_assembly
+		echo $contig_file
+		echo $plasmid_final_assembly_directory
 
 	fi
 }
 #----------------------------------------------------------------------------------------------------------------------------------------------------
 
 
+function call_prokka
+{
+	if [ $base_directory == B296 ]
+	then
+		prokka --outdir $chromosome_directory --force --prefix $base_directory --locustag L --increment 1 --compliant --centre C --genus Escherichia --species coli --strain $base_directory --kingdom Bacteria --cpus 30 --rfam $chromosome_file 
+	fi
+
+	if [ $base_directory == B296 ]
+	#if [ $base_directory != B055 ]
+	then
+		prokka --outdir $plasmid_directory --force --prefix $base_directory --locustag L --increment 1 --compliant --centre C --genus Escherichia --species coli --strain $base_directory --kingdom Bacteria --cpus 28 --rfam $plasmid_final_assembly 
+	fi
+}
+#----------------------------------------------------------------------------------------------------------------------------------------------------
+
+function align_discarded_contigs
+{
+	
+	#export plasmid_directory=$prokka_directory"plasmid/"
+	discarded_contig_file=$plasmid_final_assembly_directory$base_directory"_discarded_contigs.fa"
+	export discarded_plasmid_alignment_directory=$plasmid_directory"mauve/plasmid_2"
+
+	mkdir -p $discarded_plasmid_alignment_directory
+
+	if [ $base_directory != B055 ] #|| [ $base_directory == B204 ]
+	then
+		export ref_file=reference_files/NC_002127.gbk
+	fi
+
+	java -Xmx16G -cp /usr/local/Mauve/Mauve.jar org.gel.mauve.contigs.ContigOrderer -output $discarded_plasmid_alignment_directory -ref $ref_file -draft $discarded_contig_file 
+}
+#----------------------------------------------------------------------------------------------------------------------------------------------------
+
+function blast_discarded_contigs
+{
+	contig_file=$plasmid_final_assembly_directory$base_directory"_discarded_contigs.fa"
+	blast_results_file=$plasmid_final_assembly_directory$base_directory"_blast_results.txt"
+	#echo $contig_file
+	#echo $blast_results_file
+	blastn -task blastn -query $contig_file -db nt -outfmt 6 -num_alignments 1 -num_threads 22 -out $blast_results_file 
+	#blastn -outfmt 6 -query /root/cricket/Projects/Assembly_Pipeline/BRIG/scratch/B296.gbk.fna -db /root/cricket/Projects/Assembly_Pipeline/BRIG/scratch/CP008957.gbk.fna -out /root/cricket/Projects/Assembly_Pipeline/BRIG/scratch/B296.gbk.fnaVsCP008957.gbk.fna.tab   -task blastn 
+
+	#blastn -task blastn -query $contig_file -db nr -outfmt 6 -num_alignments 1 -max_target_seqs 1 -num_threads 22 -out $blast_results_file 
+}
+#----------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+function identify_prophage_regions
+{
+	wget --post-file=B055.gbk http://phaster.ca/phaster_api -O B055_phaster
+	#  1 {"job_id":"ZZ_cf16c43cf6","status":"You're next!..."}
+
+	wget "http://phaster.ca/phaster_api?acc=ZZ_7aee5a5db4" -O temp
+	wget phaster.ca/submissions/ZZ_7aee5a5db4.zip
+}
+#----------------------------------------------------------------------------------------------------------------------------------------------------
+
+function align_chromosome
+{
+	corpus_assembly=corpus_assembly/
+	corpus_file=corpus_assembly
+	corpus_tree=corpus.tree
+	corpus_backbone=corpus.backbone
+	mkdir -p $corpus_assembly
+
+	cd $corpus_assembly
+	progressiveMauve --output=$corpus_file --output-guide-tree=$corpus_tree --backbone-output=$corpus_backbone ../reference_files/CP008957.gbk ../final_fasta/chromosome/B201.fasta ../final_fasta/chromosome/B0246.fasta ../final_fasta/chromosome/B241.fasta ../final_fasta/chromosome/B264.fasta ../final_fasta/chromosome/B265.fasta ../final_fasta/chromosome/B271.fasta ../final_fasta/chromosome/B0247.fasta ../final_fasta/chromosome/B0249.fasta ../final_fasta/chromosome/B202.fasta ../final_fasta/chromosome/B349.fasta ../final_fasta/chromosome/B204.fasta ../final_fasta/chromosome/B250.fasta ../final_fasta/chromosome/B301.fasta ../final_fasta/chromosome/B0245.fasta ../final_fasta/chromosome/B309.fasta ../final_fasta/chromosome/B263.fasta ../final_fasta/chromosome/B244.fasta ../final_fasta/chromosome/B269.fasta ../final_fasta/chromosome/B311.fasta ../final_fasta/chromosome/B273.fasta ../final_fasta/chromosome/B296.fasta ../final_fasta/chromosome/B266.fasta ../final_fasta/chromosome/B307.fasta ../final_fasta/chromosome/B306.fasta ../final_fasta/chromosome/B251.fasta ../final_fasta/chromosome/B055.fasta
+
+	cd -
+}
+
+function count_contigs
+{
+	discarded_plasmid_alignment_directory=$base_directory"/prokka/plasmid/mauve/plasmid_2/"
+	#alignment2 /B0245_discarded_contigs.fa_contigs.tab 
+	#discarded_plasmid_alignment_directory=$base_directory"/prokka/plasmid/mauve/plasmid_2/alignment2 /B0245_discarded_contigs.fa_contigs.tab 
+	#echo $plasmid_alignment_directory
+	for dir in ${discarded_plasmid_alignment_directory[*]}
+    do
+        assemblies=($discarded_plasmid_alignment_directory"alignment*/"$base_directory"_discarded_contigs.fa.fas")
+
+        for assembly in ${assemblies[*]}
+        do
+			if [ $base_directory != 'B055' ]
+			then
+				a=test
+				#echo $assembly
+				#wc -l $assembly
+			fi
+		done
+	done
+	#/home/cricket/Projects/Assembly_Pipeline/B0245/prokka/plasmid/mauve/plasmid_2/alignment2/B0245_discarded_contigs.fa_contigs.tab 
+	#$discarded_plasmid_alignment_directory #=$plasmid_directory"mauve/plasmid_2"
+}
+
+
+
 #-----------------Function Calls--------------------
 
 export reference_indices=reference_mapping_files/
 mkdir -p $reference_indices
+
+#index reference files (for mapping -- this need only be done once)
+if [ ! -f reference_files/CP008957.sa ]; then
+	bwa index reference_files/CP008957.fasta #<- CP008957.fasta.bwt CP008957.fasta.pac CP008957.fasta.ann CP008957.fasta.amb CP008957.fasta.sa 
+fi
+
+if [ ! -f reference_files/U00096.sa ]; then
+	bwa index reference_files/U00096.fasta #<- U00096.fasta.bwt U00096.fasta.pac U00096.fasta.ann U00096.fasta.amb U00096.fasta.sa 
+fi
+
+if [ ! -f reference_files/CP008958.sa ]; then
+	bwa index reference_files/CP008958.fasta #<- CP008958.fasta.bwt CP008958.fasta.pac CP008958.fasta.ann CP008958.fasta.amb CP008958.fasta.sa 
+fi
+
 #cd $reference_indices
 #pwd
 #bwa index -p CP008957 -a is ../reference_files/CP008957.fasta
@@ -297,48 +370,58 @@ for forward_file in ${sequence_file_list[*]}
 		#java -Xmx16G -cp /usr/local/Mauve/Mauve.jar org.gel.mauve.contigs.ContigOrderer -output B204/mauve/K12 -ref reference_files/U00096.gbk  -draft B204/pilon/B204.fasta 
 
 	#create quality report using fastqc 
-		run_fastqc
+		#run_fastqc
 
 	#trim paired-end reads using trimmomatic
-		run_trimmatic
+		#run_trimmatic
 
 	#de-novo assembly using SPAdes
-		run_spades
+		#run_spades
 
 	#create quality report on corrected & trimmed fastq files using fastqc 
-		run_fastqc_corrected 
+		#run_fastqc_corrected 
 
 	#create sam/bam alignment (sorted) files
-		get_sorted_bam_files
+		#get_sorted_bam_files
 
 	#improve draft assembly with Pilon
-		run_pilon
+		#run_pilon
 
 	#align second draft assembly to reference using Mauve
-		mauve_alignment
+		#mauve_alignment
 
-	#copy final assembly files to IGV directory
-		copy_final_assembly
-
-	#This step is not finalized 
-	#create index files of final assembly
-		index_final_assembly
-
-	#This step is not finalized 
-	#create index files by mapping final fasta files to reference 
-		index_to_reference
-
-	#Separate plasmid from chromosome
-		separate_plasmid_chromosome
+	#Separate plasmid from chromosome, this copies the final & formatted assembly files to prokka directory
+	##NOTE: Prior to this step, alignments must be manually inspected for last chromosome node
+		#separate_plasmid_chromosome
 
 	#Remove n's from plasmid and chromosome files
-		remove_n_repeats
+		#remove_n_repeats
 
 	#align plasmids to ELD933 plasmid
-		align_plasmids
+		#align_plasmids
 
 	#Separate non-aligned contigs from plasmid files
-	##NOTE: Prior to this step, final alignments must be manually inspected 
+	##NOTE: Prior to this step, final alignments must be manually inspected for last plasmid node
 	### to find last aligned Node, and place that info in output file.
-		separate_plasmid_contigs
+		#separate_plasmid_contigs
+	
+	#Annotate files
+		#call_prokka
+
+	#Align discarded contigs (to smaller plasmid)
+		#align_discarded_contigs
+
+	#Blast discarded contigs
+		#blast_discarded_contigs
+
+	#Run PHASTER
+		#identify_prophage_regions
+
+	#Multi-sequence alignment for chromosomes
+		#align_chromosome
+
+	#Count contigs to rule out cross-contamination
+		#count_contigs	
 }
+
+#java -cp readseq.jar run NC_012967.1.gbk -f GFF -o NC_012967.1.gbk.gff <- convert genbank to gff GFF2 <- not good
