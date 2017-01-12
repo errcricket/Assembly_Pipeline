@@ -122,12 +122,12 @@ function get_sorted_bam_files
 #	fi
 
 	#This is for the .sai files
-	bwa aln -t 28 -f $home_dir$bwa_directory$base_directory"_1P.sai" CP008957.fasta $home_dir$corrected_forward_file 
-	bwa aln -t 28 -f $home_dir$bwa_directory$base_directory"_2P.sai" CP008957.fasta $home_dir$corrected_reverse_file
+	#bwa aln -t 28 -f $home_dir$bwa_directory$base_directory"_1P.sai" CP008957.fasta $home_dir$corrected_forward_file 
+	#bwa aln -t 28 -f $home_dir$bwa_directory$base_directory"_2P.sai" CP008957.fasta $home_dir$corrected_reverse_file
 
 	#function create_sam_alignment
 	#temp_ref="${ref_file/\.fasta/}"
-	#bwa mem -P -t 26 CP008957  $home_dir$corrected_forward_file $home_dir$corrected_reverse_file > $sam_file
+	bwa mem -P -t 26 CP008957.fasta $home_dir$corrected_forward_file $home_dir$corrected_reverse_file > $sam_file
 
 	#Convert from SAM to BAM format
 	#samtools view -b -S -o $bam_file $sam_file
