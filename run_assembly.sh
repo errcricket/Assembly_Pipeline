@@ -113,19 +113,28 @@ function get_sorted_bam_files
 
 	cd $bwa_directory
 
+#	if [ $base_directory != B055 ]  || [ $base_directory != B201 ] || [ $base_directory != B241 ]
+#	then
+#		for file in $home_dir"reference_files/CP008957.fasta.bwt" $home_dir"reference_files/CP008957.fasta.pac" $home_dir"reference_files/CP008957.fasta.ann" $home_dir"reference_files/CP008957.fasta.amb" $home_dir"reference_files/CP008957.fasta.sa" $home_dir"reference_files/CP008957.fasta"
+#		do 
+#			ln -sf $file .
+#		done
+#	fi
+
 	#This is for the .sai files
-	bwa aln -t 28 -f $base_directory"_1P.sai" $ref_file $corrected_forward_file 
-	bwa aln -t 28 -f $base_directory"_2P.sai" $ref_file $corrected_reverse_file 
+	bwa aln -t 28 -f $home_dir$bwa_directory$base_directory"_1P.sai" CP008957.fasta $home_dir$corrected_forward_file 
+	bwa aln -t 28 -f $home_dir$bwa_directory$base_directory"_2P.sai" CP008957.fasta $home_dir$corrected_reverse_file
 
 	#function create_sam_alignment
-	bwa mem -P -t 26 $ref_file Minus(fasta) $corrected_forward_file $corrected_reverse_file > $sam_file
+	#temp_ref="${ref_file/\.fasta/}"
+	#bwa mem -P -t 26 CP008957  $home_dir$corrected_forward_file $home_dir$corrected_reverse_file > $sam_file
 
 	#Convert from SAM to BAM format
-	samtools view -b -S -o $bam_file $sam_file
+	#samtools view -b -S -o $bam_file $sam_file
 
 	#bam_sort_index
-	samtools sort $bam_file $sorted_bam 
-	samtools index $sorted_bam 
+	#samtools sort $bam_file $sorted_bam 
+	#samtools index $sorted_bam 
 
 #	bwa index -p $base_directory -a is $base_directory".fa"
 #	bwa mem -t 20 $base_directory  $home_dir$corrected_forward_file $home_dir$corrected_reverse_file > $sam_file
@@ -326,17 +335,17 @@ export reference_indices=reference_mapping_files/
 mkdir -p $reference_indices
 
 #index reference files (for mapping -- this need only be done once)
-if [ ! -f reference_files/CP008957.sa ]; then
-	bwa index reference_files/CP008957.fasta #<- CP008957.fasta.bwt CP008957.fasta.pac CP008957.fasta.ann CP008957.fasta.amb CP008957.fasta.sa 
-fi
-
-if [ ! -f reference_files/U00096.sa ]; then
-	bwa index reference_files/U00096.fasta #<- U00096.fasta.bwt U00096.fasta.pac U00096.fasta.ann U00096.fasta.amb U00096.fasta.sa 
-fi
-
-if [ ! -f reference_files/CP008958.sa ]; then
-	bwa index reference_files/CP008958.fasta #<- CP008958.fasta.bwt CP008958.fasta.pac CP008958.fasta.ann CP008958.fasta.amb CP008958.fasta.sa 
-fi
+#if [ ! -f reference_files/CP008957.sa ]; then
+#	bwa index reference_files/CP008957.fasta #<- CP008957.fasta.bwt CP008957.fasta.pac CP008957.fasta.ann CP008957.fasta.amb CP008957.fasta.sa 
+#fi
+#
+#if [ ! -f reference_files/U00096.sa ]; then
+#	bwa index reference_files/U00096.fasta #<- U00096.fasta.bwt U00096.fasta.pac U00096.fasta.ann U00096.fasta.amb U00096.fasta.sa 
+#fi
+#
+#if [ ! -f reference_files/CP008958.sa ]; then
+#	bwa index reference_files/CP008958.fasta #<- CP008958.fasta.bwt CP008958.fasta.pac CP008958.fasta.ann CP008958.fasta.amb CP008958.fasta.sa 
+#fi
 
 #cd $reference_indices
 #pwd
@@ -370,25 +379,25 @@ for forward_file in ${sequence_file_list[*]}
 		#java -Xmx16G -cp /usr/local/Mauve/Mauve.jar org.gel.mauve.contigs.ContigOrderer -output B204/mauve/K12 -ref reference_files/U00096.gbk  -draft B204/pilon/B204.fasta 
 
 	#create quality report using fastqc 
-		#run_fastqc
+		run_fastqc
 
 	#trim paired-end reads using trimmomatic
-		#run_trimmatic
+		run_trimmatic
 
 	#de-novo assembly using SPAdes
-		#run_spades
+		run_spades
 
 	#create quality report on corrected & trimmed fastq files using fastqc 
-		#run_fastqc_corrected 
-
-	#create sam/bam alignment (sorted) files
-		#get_sorted_bam_files
+		run_fastqc_corrected 
 
 	#improve draft assembly with Pilon
-		#run_pilon
+		run_pilon
 
 	#align second draft assembly to reference using Mauve
-		#mauve_alignment
+		mauve_alignment
+
+	#create sam/bam alignment (sorted) files
+		get_sorted_bam_files
 
 	#Separate plasmid from chromosome, this copies the final & formatted assembly files to prokka directory
 	##NOTE: Prior to this step, alignments must be manually inspected for last chromosome node
