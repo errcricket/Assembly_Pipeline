@@ -104,7 +104,8 @@ function get_sorted_bam_files
 	export sam_file=$base_directory".sam"
 	export bam_file=$base_directory".bam"
 	export sorted_prefix=$base_directory"_sorted"
-	export sorted_bam=$sorted_prefix".bam"
+	#export sorted_bam=$sorted_prefix".bam"
+	export sorted_bam=$sorted_prefix
 	export sorted_bai=$sorted_prefix".bai"
 	export home_dir=/home/cricket/Projects/Assembly_Pipeline/
 
@@ -125,16 +126,15 @@ function get_sorted_bam_files
 	#bwa aln -t 28 -f $home_dir$bwa_directory$base_directory"_1P.sai" CP008957.fasta $home_dir$corrected_forward_file 
 	#bwa aln -t 28 -f $home_dir$bwa_directory$base_directory"_2P.sai" CP008957.fasta $home_dir$corrected_reverse_file
 
-	#function create_sam_alignment
-	#temp_ref="${ref_file/\.fasta/}"
-	bwa mem -P -t 26 CP008957.fasta $home_dir$corrected_forward_file $home_dir$corrected_reverse_file > $sam_file
+	#create_sam file
+	#bwa mem -P -t 26 CP008957.fasta $home_dir$corrected_forward_file $home_dir$corrected_reverse_file > $sam_file
 
 	#Convert from SAM to BAM format
 	#samtools view -b -S -o $bam_file $sam_file
 
 	#bam_sort_index
 	#samtools sort $bam_file $sorted_bam 
-	#samtools index $sorted_bam 
+	samtools index $sorted_bam".bam"
 
 #	bwa index -p $base_directory -a is $base_directory".fa"
 #	bwa mem -t 20 $base_directory  $home_dir$corrected_forward_file $home_dir$corrected_reverse_file > $sam_file
