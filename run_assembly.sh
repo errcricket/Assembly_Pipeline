@@ -63,14 +63,79 @@ function run_fastqc_corrected #run fastqc to check for quality
 }
 #----------------------------------------------------------------------------------------------------------------------------------------------------
 
+#----------------------------------------------------------------------------------------------------------------------------------------------------
+function set_reference
+{
+	if [ $base_directory == B055 ]
+	then
+		export ref_file=reference_files/U00096.gbk
+		export ref=_K12
+	else
+		export ref_file=reference_files/CP008957.gbk
+		export ref=_EDL933
+	fi
+}
+#----------------------------------------------------------------------------------------------------------------------------------------------------
 
+#----------------------------------------------------------------------------------------------------------------------------------------------------
+function get_sorted_bam_files
+{
+	export bwa_directory=$base_directory"/bwa_indices/"
+	export draft_assembly_file=$bwa_directory$base_directory".fa"
+	export sam_file=$base_directory".sam"
+	export bam_file=$base_directory".bam"
+	export sorted_prefix=$base_directory"_sorted"
+	#export sorted_bam=$sorted_prefix".bam"
+	export sorted_bam=$sorted_prefix
+	export sorted_bai=$sorted_prefix".bai"
+	export home_dir=/home/cricket/Projects/Assembly_Pipeline/
+
+    mkdir -p $bwa_directory 
+	#ln -sf $home_dir$spades_directory"scaffolds.fasta" $draft_assembly_file
+
+	#cd $bwa_directory
+
+	#create symbolic link
+#	if [ $base_directory != B055 ]  || [ $base_directory != B201 ] || [ $base_directory != B241 ]
+#	then
+#		for file in $home_dir"reference_files/CP008957.fasta.bwt" $home_dir"reference_files/CP008957.fasta.pac" $home_dir"reference_files/CP008957.fasta.ann" $home_dir"reference_files/CP008957.fasta.amb" $home_dir"reference_files/CP008957.fasta.sa" $home_dir"reference_files/CP008957.fasta"
+#		do 
+#			ln -sf $file .
+#		done
+#	fi
+
+	#This is for the .sai files
+	#bwa aln -t 28 -f $home_dir$bwa_directory$base_directory"_1P.sai" CP008957.fasta $home_dir$corrected_forward_file 
+	#bwa aln -t 28 -f $home_dir$bwa_directory$base_directory"_2P.sai" CP008957.fasta $home_dir$corrected_reverse_file
+
+	#create_sam file
+	#bwa mem -P -t 26 CP008957.fasta $home_dir$corrected_forward_file $home_dir$corrected_reverse_file > $sam_file
+
+	#Convert from SAM to BAM format
+	#samtools view -b -S -o $bam_file $sam_file
+
+	#bam_sort_index
+	#samtools sort $bam_file $sorted_bam 
+	#samtools index $sorted_bam".bam"
+
+	#cd -
+}
+#----------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+#----------------------------------------------------------------------------------------------------------------------------------------------------
 function run_pilon
 {
 	export pilon_directory=$base_directory"/pilon/"
-	mkdir -p $pilon_directory
-	sorted_bam=$bwa_directory$sorted_bam
+	#mkdir -p $pilon_directory
+	#sorted_bam=$bwa_directory$sorted_bam".bam"
+	#echo $sorted_bam
 
-	#java -Xmx16G -jar /usr/local/pilon.jar --threads 28 --genome $draft_assembly_file --frags $sorted_bam --changes --tracks --output $base_directory --outdir $pilon_directory 
+	#if [ $base_directory == B055 ] #Testing this out for the moment
+	#then
+	#	samtools index $sorted_bam
+	#	java -Xmx16G -jar /usr/local/pilon.jar --threads 28 --genome $draft_assembly_file --frags $sorted_bam --changes --tracks --output $base_directory --outdir $pilon_directory 
+	#fi
 }
 #----------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -93,55 +158,6 @@ function mauve_alignment
 	mauve_prefix=$base_directory$ref
 
 	#java -Xmx16G -cp /usr/local/Mauve/Mauve.jar org.gel.mauve.contigs.ContigOrderer -output $mauve_directory -ref $ref_file -draft $mauve_input_file 
-}
-#----------------------------------------------------------------------------------------------------------------------------------------------------
-
-#This is for IGV viewing and has been placed here to take advantage of the reference file assignment.
-function get_sorted_bam_files
-{
-	export bwa_directory=$base_directory"/bwa_indices/"
-	export draft_assembly_file=$bwa_directory$base_directory".fa"
-	export sam_file=$base_directory".sam"
-	export bam_file=$base_directory".bam"
-	export sorted_prefix=$base_directory"_sorted"
-	#export sorted_bam=$sorted_prefix".bam"
-	export sorted_bam=$sorted_prefix
-	export sorted_bai=$sorted_prefix".bai"
-	export home_dir=/home/cricket/Projects/Assembly_Pipeline/
-
-    mkdir -p $bwa_directory 
-	ln -sf $home_dir$spades_directory"scaffolds.fasta" $draft_assembly_file
-
-	cd $bwa_directory
-
-#	if [ $base_directory != B055 ]  || [ $base_directory != B201 ] || [ $base_directory != B241 ]
-#	then
-#		for file in $home_dir"reference_files/CP008957.fasta.bwt" $home_dir"reference_files/CP008957.fasta.pac" $home_dir"reference_files/CP008957.fasta.ann" $home_dir"reference_files/CP008957.fasta.amb" $home_dir"reference_files/CP008957.fasta.sa" $home_dir"reference_files/CP008957.fasta"
-#		do 
-#			ln -sf $file .
-#		done
-#	fi
-
-	#This is for the .sai files
-	#bwa aln -t 28 -f $home_dir$bwa_directory$base_directory"_1P.sai" CP008957.fasta $home_dir$corrected_forward_file 
-	#bwa aln -t 28 -f $home_dir$bwa_directory$base_directory"_2P.sai" CP008957.fasta $home_dir$corrected_reverse_file
-
-	#create_sam file
-	#bwa mem -P -t 26 CP008957.fasta $home_dir$corrected_forward_file $home_dir$corrected_reverse_file > $sam_file
-
-	#Convert from SAM to BAM format
-	#samtools view -b -S -o $bam_file $sam_file
-
-	#bam_sort_index
-	#samtools sort $bam_file $sorted_bam 
-	samtools index $sorted_bam".bam"
-
-#	bwa index -p $base_directory -a is $base_directory".fa"
-#	bwa mem -t 20 $base_directory  $home_dir$corrected_forward_file $home_dir$corrected_reverse_file > $sam_file
-#	samtools view -bS $sam_file | samtools sort - $sorted_prefix
-#	samtools index $sorted_bam $sorted_bai 
-#	
-	cd -
 }
 #----------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -327,7 +343,95 @@ function count_contigs
 	#$discarded_plasmid_alignment_directory #=$plasmid_directory"mauve/plasmid_2"
 }
 
+function annotate_fasta_roary
+{
+	export roary_file=roary_files/
+	export roary_gff_directory=$roary_file"gff_files/"
 
+	mkdir -p $roary_file
+	mkdir -p $roary_gff_directory
+
+	#prokka --outdir $roary_file --force --prefix $base_directory"_roary" --locustag L --increment 1 --compliant --centre C --genus Escherichia --species coli --strain $base_directory --kingdom Bacteria --cpus 28 --rfam $pilon_directory$base_directory".fasta"
+
+	#export gff_file_list=($roary_file/*.gff)
+
+	#for gff_file in ${gff_file_list[*]}
+	#do
+	#	cp $gff_file $roary_gff_directory/.
+	#done
+}
+
+#For this to work well, all locus tags should be changed to reflect the base directory
+function change_locus_tag_names
+{
+	echo "Change the locus tags from L_ to base_directory_"
+}
+
+function run_roary
+{
+	export roary_output=$roary_file"output/"
+	export roary_output_2=$roary_file"output_2/"
+	
+	mkdir -p $roary_output
+	mkdir -p $roary_output_2
+
+	#cd $roary_gff_directory
+
+	#create pangenome w/ core alignment
+	#roary -e --mafft -p 28 -f $home_dir$roary_output *.gff 
+	#roary -e --dont_delete_files --mafft -p 28 -f $home_dir$roary_output_2 *.gff 
+
+	#cd -
+}
+
+function find_union_genes
+{
+	export pangenome_union_directory=$roary_file"union/"
+	mkdir -p $pangenome_union_directory
+	
+	cd $pangenome_union_directory
+
+	query_pan_genome -a union -g $home_dir$roary_output"_1484750482/clustered_proteins" $home_dir$roary_gff_directory*.gff -o pangenome_union 
+
+	cd -
+}
+
+function find_core_genes
+{
+	export pangenome_intersection_directory=$roary_file"intersection/"
+	mkdir -p $pangenome_intersection_directory
+	
+	cd $pangenome_intersection_directory
+
+	query_pan_genome -a intersection -g $home_dir$roary_output"_1484750482/clustered_proteins" $home_dir$roary_gff_directory*.gff -o pangenome_intersection 
+
+	cd -
+}
+
+function find_accessory_genes
+{
+	export pangenome_complement_directory=$roary_file"complement/"
+	mkdir -p $pangenome_complement_directory
+	
+	cd $pangenome_complement_directory
+
+	query_pan_genome -a complement -g $home_dir$roary_output"_1484750482/clustered_proteins" $home_dir$roary_gff_directory*.gff -o pangenome_complement 
+
+	cd -
+}
+
+function find_differences
+{
+	#first group is present (flocculate), second is non_flocculate
+	export pangenome_difference_directory=$roary_file"difference/"
+	mkdir -p $pangenome_difference_directory
+	
+	cd $pangenome_difference_directory
+
+	query_pan_genome -a difference --g $home_dir$roary_output"_1484750482/clustered_proteins" -input_set_one $home_dir$roary_gff_directory"201.gbk.gff",$home_dir$roary_gff_directory"B0246_roary.gff",$home_dir$roary_gff_directory"B250_roary.gff",$home_dir$roary_gff_directory"B263_roary.gff",$home_dir$roary_gff_directory"B266_roary.gff",$home_dir$roary_gff_directory"B271_roary.gff",$home_dir$roary_gff_directory"B307_roary.gff" --input_set_two $home_dir$roary_gff_directory"B202_roary.gff",$home_dir$roary_gff_directory"B204_roary.gff",$home_dir$roary_gff_directory"241.gbk.gff",$home_dir$roary_gff_directory"B244_roary.gff",$home_dir$roary_gff_directory"B0245_roary.gff",$home_dir$roary_gff_directory"B0247_roary.gff",$home_dir$roary_gff_directory"B0249_roary.gff",$home_dir$roary_gff_directory"B251_roary.gff",$home_dir$roary_gff_directory"B264_roary.gff",$home_dir$roary_gff_directory"B265_roary.gff",$home_dir$roary_gff_directory"B269_roary.gff",$home_dir$roary_gff_directory"B273_roary.gff",$home_dir$roary_gff_directory"B296_roary.gff",$home_dir$roary_gff_directory"B301_roary.gff",$home_dir$roary_gff_directory"B306_roary.gff",$home_dir$roary_gff_directory"B309_roary.gff",$home_dir$roary_gff_directory"B311_roary.gff",$home_dir$roary_gff_directory"B349_roary.gff" -o flocculate_difference
+
+	cd -
+}
 
 #-----------------Function Calls--------------------
 
@@ -390,14 +494,14 @@ for forward_file in ${sequence_file_list[*]}
 	#create quality report on corrected & trimmed fastq files using fastqc 
 		run_fastqc_corrected 
 
+	#create sam/bam alignment (sorted) files
+		get_sorted_bam_files
+
 	#improve draft assembly with Pilon
 		run_pilon
 
 	#align second draft assembly to reference using Mauve
-		mauve_alignment
-
-	#create sam/bam alignment (sorted) files
-		get_sorted_bam_files
+		#mauve_alignment
 
 	#Separate plasmid from chromosome, this copies the final & formatted assembly files to prokka directory
 	##NOTE: Prior to this step, alignments must be manually inspected for last chromosome node
@@ -431,6 +535,24 @@ for forward_file in ${sequence_file_list[*]}
 
 	#Count contigs to rule out cross-contamination
 		#count_contigs	
+
+	#Annotate chromosome & plasmids together
+		annotate_fasta_roary
 }
+
+	#Run Roary to get Pangenome This needs to be run once, not for each file
+		run_roary
+
+	#Run Roary to get all genes
+		find_union_genes
+
+	#Run Roary to get core genes
+		#find_core_genes
+
+	#Run Roary to get accessory genes
+		#find_accessory_genes
+
+	#Run Roary to find differences between flocc & non-flocc 
+		#find_differences
 
 #java -cp readseq.jar run NC_012967.1.gbk -f GFF -o NC_012967.1.gbk.gff <- convert genbank to gff GFF2 <- not good
