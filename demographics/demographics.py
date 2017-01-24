@@ -47,11 +47,12 @@ for dirpath, dirnames, filenames in os.walk(path):
 			file_list.append(os.path.join(dirpath, filename))
 #print(file_list)
 
+flocculates = ['B201', 'B246', 'B250', 'B263', 'B266', 'B271', 'B307']
 #---------------------------------------------------------------------------------------------------------------------------------
 
 #--------------------------PARSE GENBANK FILES---------------------------------
 with open(out_file, 'w') as output_file:
-	output_file.write('Strain\tGenome_Size\tGC_Content\tFeature_Count\n')
+	output_file.write('Strain\tGenome_Size\tGC_Content\tFeature_Count\tFlocculate\n')
 
 	for f in file_list:
 		sequence = ''
@@ -59,6 +60,7 @@ with open(out_file, 'w') as output_file:
 		gc_content = ''
 		feature_count = 0
 		genome_size = 0
+		flocculate = ''
 
 		strain = f.split('/')[-1].replace('.gbk', '')
 	
@@ -73,6 +75,13 @@ with open(out_file, 'w') as output_file:
 		genome_size = len(sequence)
 		gc_content = round(GC(record.seq), 2)
 
-		data = '\t'.join([strain, str(genome_size), str(gc_content), str(feature_count)]) + '\n'
+		if strain in flocculates:
+			flocculate = 1
+		else:
+			flocculate = 0
+
+		data = '\t'.join([strain, str(genome_size), str(gc_content), str(feature_count), str(flocculate)]) + '\n'
 		output_file.write(data)
 		#print(strain, genome_size, gc_content, feature_count)
+
+
